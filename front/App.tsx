@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState } from 'react';
-import type { PropsWithChildren } from 'react';
 import { Button, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import AuthStackNavigator from './src/navigation/AuthStackNavigator';
 
 
 function App() {
@@ -13,16 +13,7 @@ function App() {
 
   return (
     <NavigationContainer>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={handleChangeInput}
-          />
-          <Text>이름</Text>
-        </View>
-      </SafeAreaView>
+      <AuthStackNavigator />
     </NavigationContainer>
 
   );
