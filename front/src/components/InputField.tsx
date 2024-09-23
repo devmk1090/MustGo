@@ -1,6 +1,7 @@
-import React, { useRef } from 'react';
+import React, { ForwardedRef, forwardRef, useRef } from 'react';
 import { Dimensions, Pressable, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 import { colors } from '../constants';
+import { mergeRefs } from '../utils';
 
 interface InputFieldProps extends TextInputProps {
     disabled?: boolean;
@@ -10,12 +11,12 @@ interface InputFieldProps extends TextInputProps {
 
 const deviceHeight = Dimensions.get('screen').height;
 
-function InputField({
+const InputField = forwardRef(({
     disabled = false,
     error,
     touched,
     ...props
-}: InputFieldProps) {
+}: InputFieldProps, ref?: ForwardedRef<TextInput>,) => {
     const innerRef = useRef<TextInput | null>(null);
 
     const handlePressInput = () => {
@@ -30,6 +31,7 @@ function InputField({
                     touched && Boolean(error) && styles.inputError,
                 ]}>
                 <TextInput
+                    ref={ref ? mergeRefs(innerRef, ref) : innerRef}
                     editable={!disabled}
                     placeholderTextColor={colors.GRAY_500}
                     style={styles.input}
@@ -42,7 +44,7 @@ function InputField({
             </View>
         </Pressable>
     );
-}
+});
 
 const styles = StyleSheet.create({
     container: {
