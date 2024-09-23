@@ -4,7 +4,7 @@ import { StyleSheet} from 'react-native';
 import AuthHomeScreen from '../../screens/auth/AuthHomeScreen';
 import LoginScreen from '../../screens/auth/LoginScreen';
 import { authNavigations} from '../../constants';
-import SignupScreen from '../../screens/auth/SignupScreen';
+import SignScreen from '../../screens/auth/SignScreen';
 
 export type AuthStackParamList = {
     [authNavigations.AUTH_HOME]: undefined;
@@ -46,7 +46,7 @@ function AuthStackNavigator() {
             />
             <Stack.Screen 
             name={authNavigations.SIGNUP} 
-            component={SignupScreen} 
+            component={SignScreen} 
             options={{
                 headerTitle: '회원가입',
             }}
