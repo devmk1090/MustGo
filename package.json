@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "react-native-encrypted-storage": "^4.0.3"
+  }
+}
