@@ -1,10 +1,11 @@
-import { useMutation, UseMutationOptions, useQuery } from "@tanstack/react-query";
-import { getAccessToken, getProfile, postLogin, postSignup } from "../../api/auth";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getAccessToken, getProfile, logout, postLogin, postSignup } from "../../api/auth";
 import { UseMutationCustomOptions, UseQueryCustomOptions } from "../../types/common";
 import { removeEncryptStorage, setEncryptStorage } from "../../utils";
 import { removeHeader, setHeader } from "../../utils/header";
 import { useEffect } from "react";
 import queryClient from "../../api/queryClient";
+import { numbers, queryKeys, storageKeys } from "../../constants";
 
 function useSignup(mutationOptions?: UseMutationCustomOptions) {
     return useMutation({
@@ -67,6 +68,20 @@ function useGetProfile(queryOptions?: UseQueryCustomOptions) {
     });
 }
 
+function useLogout(mutationOptions?: UseMutationCustomOptions) {
+    return useMutation({
+      mutationFn: logout,
+      onSuccess: () => {
+        removeHeader('Authorization');
+        removeEncryptStorage(storageKeys.REFRESH_TOKEN);
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({queryKey: [queryKeys.AUTH]});
+      },
+      ...mutationOptions,
+    });
+  }
+
 function useAuth() {
     const signupMutation = useSignup();
     const refreshTokenQuery = useGetRefreshToken();
@@ -85,3 +100,5 @@ function useAuth() {
         logoutMutation,
     };
 }
+
+export default useAuth;
