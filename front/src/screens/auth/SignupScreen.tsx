@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
-import InputField from '../../components/InputField';
-import CustomButton from '../../components/CustomButton';
-import { validateSignup } from '../../utils';
-import useForm from '../../hooks/useForm';
-import useAuth from '../../hooks/queries/useAuth';
+import InputField from '@/components/InputField';
+import CustomButton from '@/components/CustomButton';
+import { validateSignup } from '@/utils';
+import useForm from '@/hooks/useForm';
+import useAuth from '@/hooks/queries/useAuth';
 
-function SignScreen() {
+function SignupScreen() {
   const passwordRef = useRef<TextInput | null>(null);
   const passworConfirmdRef = useRef<TextInput | null>(null);
   const { signupMutation, loginMutation } = useAuth()
@@ -77,4 +77,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignScreen;
+export default SignupScreen;
