@@ -10,6 +10,9 @@ function MapHomeScreen() {
         <MapView
             style={styles.container}
             provider={PROVIDER_GOOGLE}
+            showsUserLocation
+            followsUserLocation
+            showsMyLocationButton={false}
         />
     );
 }
