@@ -7,6 +7,7 @@ import MapStackNavigator, { MapStackParamList } from '../stack/MapStackNavigator
 import { colors, mainNavigations } from '@/constants';
 import { NavigatorScreenParams, RouteProp } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import CustomDrawerContent from './CustomDrawerContent';
 
 export type MainDrawerParamList = {
   [mainNavigations.HOME]: NavigatorScreenParams<MapStackParamList>;
@@ -46,6 +47,7 @@ function DrawerIcons(route: RouteProp<MainDrawerParamList>, focused: boolean) {
 function MainDrawerNavigator() {
   return (
     <Drawer.Navigator
+      drawerContent={CustomDrawerContent}
       screenOptions={({ route }) => ({
         headerShown: false,
         drawerType: 'front',
@@ -82,9 +84,7 @@ function MainDrawerNavigator() {
           title: '캘린더'
         }} />
     </Drawer.Navigator>
-  )
+  );
 }
-
-const styles = StyleSheet.create({});
 
 export default MainDrawerNavigator;
