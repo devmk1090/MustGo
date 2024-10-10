@@ -6,7 +6,7 @@ import { colors } from '@/constants';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
     const { getProfileQuery } = useAuth();
-    const { email, nickname, imageUri, kakaoImageUri } = getProfileQuery.data as { email: string; nickname: string; imageUri: string; kakaoImageUri: string } || {};
+    const { email, nickname, imageUri, kakaoImageUri } = getProfileQuery.data || {};
 
     return (
         <SafeAreaView style={styles.container}>
@@ -30,7 +30,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
                         )}
                     </Pressable>
 
-                    <Text style={styles.nameText}>{nickname ?? email}</Text>
+                    <Text style={styles.nameText}>'{nickname ?? email}'</Text>
                 </View>
                 <DrawerItemList {...props} />
             </DrawerContentScrollView>
