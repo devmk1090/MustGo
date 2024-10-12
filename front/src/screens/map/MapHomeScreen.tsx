@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import useAuth from '@/hooks/queries/useAuth';
-import MapView, { LatLng, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Callout, LatLng, LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { colors } from '@/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -16,6 +16,7 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import useUserLocation from '@/hooks/useUserLocation';
 import usePermission from '@/hooks/usePermission';
 import mapStyle from '@/style/mapStyle';
+import CustomMarker from '@/components/CustomMarker';
 
 type Navigation = CompositeNavigationProp<
     StackNavigationProp<MapStackParamList>,
@@ -28,11 +29,16 @@ function MapHomeScreen() {
     const navigation = useNavigation<Navigation>();
     const mapRef = useRef<MapView | null>(null);
     const { userLocation, isUserLocationError } = useUserLocation();
+    const [selectLocation, setSelectLocation] = useState<LatLng>();
 
     usePermission('LOCATION')
 
     const handleLogout = () => {
         logoutMutation.mutate(null);
+    };
+
+    const handleLongPressMapView = ({ nativeEvent }: LongPressEvent) => {
+        setSelectLocation(nativeEvent.coordinate);
     };
 
     const handlePressUserLocation = () => {
@@ -58,7 +64,30 @@ function MapHomeScreen() {
                 followsUserLocation
                 showsMyLocationButton={false}
                 customMapStyle={mapStyle}
-            />
+                onLongPress={handleLongPressMapView}>
+
+                <CustomMarker
+                    color="RED"
+                    coordinate={{
+                        latitude: 37.5516032365118,
+                        longitude: 126.98989626020192,
+                    }}
+                />
+                <CustomMarker
+                    color="BLUE"
+                    score={1}
+                    coordinate={{
+                        latitude: 37.5616032365118,
+                        longitude: 126.98989626020192,
+                    }}
+                />
+                {selectLocation && (
+                    <Callout>
+                        <Marker coordinate={selectLocation} />
+                    </Callout>
+                )}
+
+            </MapView>
             <Pressable
                 style={[styles.drawerButton, { top: inset.top || 20 }]}
                 onPress={() => navigation.openDrawer()}>
