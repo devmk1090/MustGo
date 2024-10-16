@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import Octicons from 'react-native-vector-icons/Octicons';
@@ -10,6 +10,8 @@ import CustomButton from '@/components/CustomButton';
 import useForm from '@/hooks/useForm';
 import { validateAddPost } from '@/utils';
 import AddPostHeaderRight from '@/components/AddPostHeaderRight';
+import { createPost } from '@/api';
+import { MarkerColor } from '@/types';
 
 type AddPostScreenProps = StackScreenProps<
   MapStackParamList,
@@ -27,9 +29,19 @@ function AddPostScreen({route.navigation}: AddPostScreenProps) {
     validate: validateAddPost,
   });
 
+  const [markerColor, setMarkerColor] = useState<MarkerColor>('RED');
+  const [score, setScore] = useState(5);
+
   const handleSubmit = () => {
-    //TODO
-  }
+    const body = {
+      date: new Date(),
+      title: addPost.values.title,
+      description: addPost.values.description,
+      color: markerColor,
+      score,
+      imageUris: [],
+    };
+  };
   
   useEffect(() => {
     navigation.setOptions({

@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MapStackParamList } from '@/navigations/stack/MapStackNavigator';
@@ -16,6 +15,7 @@ import useUserLocation from '@/hooks/useUserLocation';
 import usePermission from '@/hooks/usePermission';
 import mapStyle from '@/style/mapStyle';
 import CustomMarker from '@/components/CustomMarker';
+import useGetMarkers from '@/hooks/queries/useGetMarkers';
 
 type Navigation = CompositeNavigationProp<
     StackNavigationProp<MapStackParamList>,
@@ -28,6 +28,7 @@ function MapHomeScreen() {
     const mapRef = useRef<MapView | null>(null);
     const { userLocation, isUserLocationError } = useUserLocation();
     const [selectLocation, setSelectLocation] = useState<LatLng | null>();
+    const { data: markers = [] } = useGetMarkers();
 
     usePermission('LOCATION')
 
@@ -35,20 +36,20 @@ function MapHomeScreen() {
         setSelectLocation(nativeEvent.coordinate);
     };
 
-    
-  const handlePressAddPost = () => {
-    if (!selectLocation) {
-      return Alert.alert(
-        alerts.NOT_SELECTED_LOCATION.TITLE,
-        alerts.NOT_SELECTED_LOCATION.DESCRIPTION,
-      );
-    }
 
-    navigation.navigate(mapNavigations.ADD_POST, {
-      location: selectLocation,
-    });
-    setSelectLocation(null); //다시 돌아오면 null
-  };
+    const handlePressAddPost = () => {
+        if (!selectLocation) {
+            return Alert.alert(
+                alerts.NOT_SELECTED_LOCATION.TITLE,
+                alerts.NOT_SELECTED_LOCATION.DESCRIPTION,
+            );
+        }
+
+        navigation.navigate(mapNavigations.ADD_POST, {
+            location: selectLocation,
+        });
+        setSelectLocation(null); //다시 돌아오면 null
+    };
 
     const handlePressUserLocation = () => {
         if (isUserLocationError) {
@@ -74,22 +75,14 @@ function MapHomeScreen() {
                 showsMyLocationButton={false}
                 customMapStyle={mapStyle}
                 onLongPress={handleLongPressMapView}>
-
-                <CustomMarker
-                    color="RED"
-                    coordinate={{
-                        latitude: 37.5516032365118,
-                        longitude: 126.98989626020192,
-                    }}
-                />
-                <CustomMarker
-                    color="BLUE"
-                    score={1}
-                    coordinate={{
-                        latitude: 37.5616032365118,
-                        longitude: 126.98989626020192,
-                    }}
-                />
+                {markers.map(({ id, color, score, ...coordinate }) => (
+                    <CustomMarker
+                        key={id}
+                        color={color}
+                        score={score}
+                        coordinate={coordinate}
+                    />
+                ))}
                 {selectLocation && (
                     <Callout>
                         <Marker coordinate={selectLocation} />
