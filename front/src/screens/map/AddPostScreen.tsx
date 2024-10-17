@@ -12,15 +12,20 @@ import { validateAddPost } from '@/utils';
 import AddPostHeaderRight from '@/components/AddPostHeaderRight';
 import { createPost } from '@/api';
 import { MarkerColor } from '@/types';
+import useGetAddress from '@/hooks/useGetAddress';
+import useMutateCreatePost from '@/hooks/queries/useMutateCreatePost';
 
 type AddPostScreenProps = StackScreenProps<
   MapStackParamList,
   typeof mapNavigations.ADD_POST
 >;
 
-function AddPostScreen({route.navigation}: AddPostScreenProps) {
+function AddPostScreen({route, navigation}: AddPostScreenProps) {
   const {location} = route.params;
   const descriptionRef = useRef<TextInput | null>(null);
+  const createPost = useMutateCreatePost();
+  const address = useGetAddress(location);
+
   const addPost = useForm({
     initialValue: {
       title: '',
@@ -41,6 +46,12 @@ function AddPostScreen({route.navigation}: AddPostScreenProps) {
       score,
       imageUris: [],
     };
+    createPost.mutate(
+      {address, ...location, ...body},
+      {
+        onSuccess: () => navigation.goBack(),
+      },
+    );
   };
   
   useEffect(() => {
@@ -54,7 +65,7 @@ function AddPostScreen({route.navigation}: AddPostScreenProps) {
     <ScrollView style={styles.contentContainer}>
       <View style={styles.inputContainer}>
         <InputField
-          value=""
+          value={address}
           disabled={true}
           icon={
             <Octicons name="location" size={16} color={colors.GRAY_500} />
