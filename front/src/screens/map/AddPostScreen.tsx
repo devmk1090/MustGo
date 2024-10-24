@@ -19,6 +19,10 @@ import ScoreInput from '@/components/ScoreInput';
 import DatePickerOption from '@/components/DatePickerOption';
 import { getDateWithSeparator } from '@/utils/date';
 import useModal from '@/hooks/useModal';
+import useImagePicker from '@/hooks/useImagePicker';
+import usePermission from '@/hooks/usePermission';
+import ImageInput from '@/components/ImageInput';
+import PreviewImageList from '@/components/PreviewImageList';
 
 type AddPostScreenProps = StackScreenProps<
   MapStackParamList,
@@ -45,6 +49,12 @@ function AddPostScreen({ route, navigation }: AddPostScreenProps) {
   const datePickerModal = useModal();
   const [date, setDate] = useState(new Date());
   const [isPicked, setIsPicked] = useState(false);
+
+  const imagePicker = useImagePicker({
+    initialImages: [],
+  });
+
+  usePermission('PHOTO');
 
   const handleChangeDate = (pickedDate: Date) => {
     setDate(pickedDate);
@@ -131,6 +141,12 @@ function AddPostScreen({ route, navigation }: AddPostScreenProps) {
             onPressMarker={handleSelectMarker}
           />
           <ScoreInput score={score} onChangeScore={handleChangeScore} />
+          <View style={styles.imagesViewer}>
+            <ImageInput onChange={imagePicker.handleChange} />
+            <PreviewImageList
+              imageUris={imagePicker.imageUris}
+            />
+          </View>
           <DatePickerOption
             date={date}
             isVisible={datePickerModal.isVisible}
@@ -155,6 +171,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     gap: 20,
     marginBottom: 20,
+  },
+  imagesViewer: {
+    flexDirection: 'row',
   },
 });
 
