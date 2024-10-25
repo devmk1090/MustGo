@@ -22,6 +22,18 @@ function useImagePicker({ initialImages = [] }: UseImagePickerProps) {
     setImageUris(prev => [...prev, ...uris.map(uri => ({uri}))]);
   };
 
+  const deleteImageUri = (uri: string) => {
+    const newImageUris = imageUris.filter(image => image.uri !== uri);
+    setImageUris(newImageUris);
+  };
+
+  const changeImageUrisOrder = (fromIndex: number, toIndex: number) => {
+    const copyImageUris = [...imageUris];
+    const [removedImage] = copyImageUris.splice(fromIndex, 1); //이미지를 제거하고
+    copyImageUris.splice(toIndex, 0, removedImage); //
+    setImageUris(copyImageUris);
+  };
+
   const handleChange = () => {
     ImageCropPicker.openPicker({
       mediaType: 'photo',
@@ -46,6 +58,8 @@ function useImagePicker({ initialImages = [] }: UseImagePickerProps) {
 
   return {
     imageUris,
+    delete: deleteImageUri,
+    changeOrder: changeImageUrisOrder,
     handleChange,
   };
 }
