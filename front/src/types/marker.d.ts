@@ -1,4 +1,4 @@
-import { LatLng } from "react-native-maps";
+import { LatLng, MapMarkerProps } from "react-native-maps";
 
 declare module 'react-native-maps' {
     export interface MyMapMarkerProps extends MapMarkerProps {
