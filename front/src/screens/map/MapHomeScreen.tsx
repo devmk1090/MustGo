@@ -1,12 +1,10 @@
-import React, { useRef } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import useAuth from '@/hooks/queries/useAuth';
-import MapView, { LatLng, PROVIDER_GOOGLE } from 'react-native-maps';
-import { colors } from '@/constants';
+import React, { useRef, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import MapView, { Callout, LatLng, LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { alerts, colors, mapNavigations } from '@/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
 
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -16,6 +14,10 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import useUserLocation from '@/hooks/useUserLocation';
 import usePermission from '@/hooks/usePermission';
 import mapStyle from '@/style/mapStyle';
+import CustomMarker from '@/components/CustomMarker';
+import useGetMarkers from '@/hooks/queries/useGetMarkers';
+import MarkerModal from '@/components/MarkerModal';
+import useModal from '@/hooks/useModal';
 
 type Navigation = CompositeNavigationProp<
     StackNavigationProp<MapStackParamList>,
@@ -24,15 +26,46 @@ type Navigation = CompositeNavigationProp<
 
 function MapHomeScreen() {
     const inset = useSafeAreaInsets();
-    const { logoutMutation } = useAuth();
     const navigation = useNavigation<Navigation>();
     const mapRef = useRef<MapView | null>(null);
     const { userLocation, isUserLocationError } = useUserLocation();
-
+    const [selectLocation, setSelectLocation] = useState<LatLng | null>();
+    const [markerId, setMarkerId] = useState<number | null>(null);
+    const markerModal = useModal();
+    const { data: markers = [] } = useGetMarkers();
     usePermission('LOCATION')
 
-    const handleLogout = () => {
-        logoutMutation.mutate(null);
+    const moveMapView = (coordinate: LatLng) => {
+        mapRef.current?.animateToRegion({
+            ...coordinate,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+        });
+    };
+
+    const handlePressMarker = (id: number, coordinate: LatLng) => {
+        setMarkerId(id);
+        markerModal.show();
+        moveMapView(coordinate);
+    };
+
+    const handleLongPressMapView = ({ nativeEvent }: LongPressEvent) => {
+        setSelectLocation(nativeEvent.coordinate);
+    };
+
+
+    const handlePressAddPost = () => {
+        if (!selectLocation) {
+            return Alert.alert(
+                alerts.NOT_SELECTED_LOCATION.TITLE,
+                alerts.NOT_SELECTED_LOCATION.DESCRIPTION,
+            );
+        }
+
+        navigation.navigate(mapNavigations.ADD_POST, {
+            location: selectLocation,
+        });
+        setSelectLocation(null); //다시 돌아오면 null
     };
 
     const handlePressUserLocation = () => {
@@ -40,12 +73,7 @@ function MapHomeScreen() {
             // 에러메세지
             return;
         }
-        mapRef.current?.animateToRegion({ // 내 위치로 이동하기 위한 함수
-            latitude: userLocation.latitude,
-            longitude: userLocation.longitude,
-            latitudeDelta: 0.0922, //확대 스케일
-            longitudeDelta: 0.0421,
-        });
+        moveMapView(userLocation)
     };
 
     return (
@@ -58,17 +86,46 @@ function MapHomeScreen() {
                 followsUserLocation
                 showsMyLocationButton={false}
                 customMapStyle={mapStyle}
-            />
+                onLongPress={handleLongPressMapView}
+                region={{
+                    ...userLocation,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                }}>
+                {markers.map(({ id, color, score, ...coordinate }) => (
+                    <CustomMarker
+                        key={id}
+                        color={color}
+                        score={score}
+                        coordinate={coordinate}
+                        onPress={() => handlePressMarker(id, coordinate)}
+                    />
+                ))}
+                {selectLocation && (
+                    <Callout>
+                        <Marker coordinate={selectLocation} />
+                    </Callout>
+                )}
+            </MapView>
             <Pressable
                 style={[styles.drawerButton, { top: inset.top || 20 }]}
                 onPress={() => navigation.openDrawer()}>
                 <Ionicons name="menu" color={colors.WHITE} size={25} />
             </Pressable>
             <View style={styles.buttonList}>
+                <Pressable style={styles.mapButton} onPress={handlePressAddPost}>
+                    <MaterialIcons name="add" color={colors.WHITE} size={25} />
+                </Pressable>
                 <Pressable style={styles.mapButton} onPress={handlePressUserLocation}>
                     <MaterialIcons name="my-location" color={colors.WHITE} size={25} />
                 </Pressable>
             </View>
+
+            <MarkerModal
+                markerId={markerId}
+                isVisible={markerModal.isVisible}
+                hide={markerModal.hide}
+            />
         </>
     );
 }
