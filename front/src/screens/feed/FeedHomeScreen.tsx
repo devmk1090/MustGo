@@ -3,12 +3,16 @@ import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 
 function FeedHomeScreen() {
   return (
-    <SafeAreaView>
-        <Text>피드</Text>
+    <SafeAreaView style={styles.container}>
+      <FeedList />
     </SafeAreaView>
-  )
+  );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export default FeedHomeScreen;
