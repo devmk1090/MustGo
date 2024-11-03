@@ -6,23 +6,23 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import { MapStackParamList } from '@/navigations/stack/MapStackNavigator';
 import { colors, mapNavigations } from '@/constants';
 import InputField from '@/components/InputField';
-import CustomButton from '@/components/CustomButton';
+import CustomButton from '@/components/common/CustomButton';
 import useForm from '@/hooks/useForm';
 import { validateAddPost } from '@/utils';
-import AddPostHeaderRight from '@/components/AddPostHeaderRight';
+import AddPostHeaderRight from '@/components/post/AddPostHeaderRight';
 import { createPost } from '@/api';
 import { MarkerColor } from '@/types';
 import useGetAddress from '@/hooks/useGetAddress';
 import useMutateCreatePost from '@/hooks/queries/useMutateCreatePost';
-import MarkerSelector from '@/components/MarkerSelector';
-import ScoreInput from '@/components/ScoreInput';
-import DatePickerOption from '@/components/DatePickerOption';
+import MarkerSelector from '@/components/post/MarkerSelector';
+import ScoreInput from '@/components/post/ScoreInput';
+import DatePickerOption from '@/components/post/DatePickerOption';
 import { getDateWithSeparator } from '@/utils/date';
 import useModal from '@/hooks/useModal';
 import useImagePicker from '@/hooks/useImagePicker';
 import usePermission from '@/hooks/usePermission';
-import ImageInput from '@/components/ImageInput';
-import PreviewImageList from '@/components/PreviewImageList';
+import ImageInput from '@/components/post/ImageInput';
+import PreviewImageList from '@/components/common/PreviewImageList';
 
 type AddPostScreenProps = StackScreenProps<
   MapStackParamList,
