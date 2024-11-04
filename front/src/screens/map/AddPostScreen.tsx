@@ -5,7 +5,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 
 import { MapStackParamList } from '@/navigations/stack/MapStackNavigator';
 import { colors, mapNavigations } from '@/constants';
-import InputField from '@/components/InputField';
+import InputField from '@/components/common/InputField';
 import CustomButton from '@/components/common/CustomButton';
 import useForm from '@/hooks/useForm';
 import { validateAddPost } from '@/utils';
@@ -147,6 +147,7 @@ function AddPostScreen({ route, navigation }: AddPostScreenProps) {
               imageUris={imagePicker.imageUris}
               onDelete={imagePicker.delete}
               onChangeOrder={imagePicker.changeOrder}
+              showOption
             />
           </View>
           <DatePickerOption

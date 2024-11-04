@@ -15,7 +15,7 @@ export type MainDrawerParamList = {
   [mainNavigations.CALENDAR]: undefined;
 };
 
-const Drawer = createDrawerNavigator();
+const Drawer = createDrawerNavigator<MainDrawerParamList>();
 
 function DrawerIcons(route: RouteProp<MainDrawerParamList>, focused: boolean) {
   let iconName = '';
