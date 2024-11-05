@@ -8,10 +8,11 @@ function useMutateCreatePost(mutationOptions?: UseMutationCustomOptions) {
     return useMutation({
         mutationFn: createPost,
         onSuccess: newPost => {
+            
             //쿼리를 무효화해서 상태를 업데이트하는 방법(invalidateQueries)
-            // queryClient.invalidateQueries({
-            //     queryKey: [queryKeys.MARKER, queryKeys.GET_MARKERS],
-            // })
+            queryClient.invalidateQueries({
+                queryKey: [queryKeys.MARKER, queryKeys.GET_MARKERS],
+            })
 
             //서버에서 응답값을 내려주면 직접 캐시를 업데이트하는 방법
             queryClient.setQueryData<Marker[]>(

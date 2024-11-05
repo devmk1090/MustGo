@@ -14,9 +14,14 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import useGetPost from '@/hooks/queries/useGetPost';
-import {colors} from '@/constants';
+import {colors, feedNavigations, mainNavigations} from '@/constants';
 import {getDateWithSeparator} from '@/utils';
 import CustomMarker from '../common/CustomMarker';
+import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { FeedStackParamList } from '@/navigations/stack/FeedStackNavigator';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { MainDrawerParamList } from '@/navigations/drawer/MainDrawerNavigator';
 
 interface MarkerModalProps {
   markerId: number | null;
@@ -24,7 +29,13 @@ interface MarkerModalProps {
   hide: () => void;
 }
 
+type Navigation = CompositeNavigationProp<
+  DrawerNavigationProp<MainDrawerParamList>,
+  StackNavigationProp<FeedStackParamList>
+>;
+
 function MarkerModal({markerId, isVisible, hide}: MarkerModalProps) {
+  const navigation = useNavigation<Navigation>();
   const {data: post, isPending, isError} = useGetPost(markerId);
   
   //pending or error 이면 표시하지 않는다
@@ -32,10 +43,20 @@ function MarkerModal({markerId, isVisible, hide}: MarkerModalProps) {
     return <></>;
   }
 
+  const handlePressModal = () => {
+    navigation.navigate(mainNavigations.FEED, {
+      screen: feedNavigations.FEED_DETAIL,
+      params: {
+        id: post.id,
+      },
+      initial: false, //피드 상세 > 피드 목록으로 이동할 수 있도록
+    });
+  };
+
   return (
     <Modal visible={isVisible} transparent={true} animationType={'slide'}>
       <SafeAreaView style={[styles.optionBackground]} onTouchEnd={hide}>
-        <Pressable style={styles.cardContainer} onPress={() => {}}>
+        <Pressable style={styles.cardContainer} onPress={handlePressModal}>
           <View style={styles.cardInner}>
             <View style={styles.cardAlign}>
               {post.images.length > 0 && (
