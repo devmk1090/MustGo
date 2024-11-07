@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Callout, LatLng, LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { alerts, colors, mapNavigations } from '@/constants';
@@ -16,8 +16,9 @@ import usePermission from '@/hooks/usePermission';
 import mapStyle from '@/style/mapStyle';
 import CustomMarker from '@/components/common/CustomMarker';
 import useGetMarkers from '@/hooks/queries/useGetMarkers';
-import MarkerModal from '@/components/MarkerModal';
+import MarkerModal from '@/components/map/MarkerModal';
 import useModal from '@/hooks/useModal';
+import useLocationStore from '@/store/useLocationStore';
 
 type Navigation = CompositeNavigationProp<
     StackNavigationProp<MapStackParamList>,
@@ -33,6 +34,8 @@ function MapHomeScreen() {
     const [markerId, setMarkerId] = useState<number | null>(null);
     const markerModal = useModal();
     const { data: markers = [] } = useGetMarkers();
+    const {moveLocation} = useLocationStore();
+
     usePermission('LOCATION')
 
     const moveMapView = (coordinate: LatLng) => {
@@ -75,6 +78,11 @@ function MapHomeScreen() {
         }
         moveMapView(userLocation)
     };
+
+    useEffect(() => {
+        //moveLocation이 있다면 
+        moveLocation && moveMapView(moveLocation)
+    }, [moveLocation]);
 
     return (
         <>
