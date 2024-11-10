@@ -52,6 +52,7 @@ function OptionMain({
   );
 }
 
+//컴포넌트 사이에서 어떤 함수를 공유하려면 Context API 이용
 function Background({children}: PropsWithChildren) {
   const optionContext = useContext(OptionContext);
 

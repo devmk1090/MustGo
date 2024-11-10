@@ -25,6 +25,8 @@ import { CompositeScreenProps } from '@react-navigation/native';
 import { MainDrawerParamList } from '@/navigations/drawer/MainDrawerNavigator';
 import { DrawerScreenProps } from '@react-navigation/drawer';
 import useLocationStore from '@/store/useLocationStore';
+import useModal from '@/hooks/useModal';
+import FeedDetailOption from '@/components/feed/FeedDetailOption';
 
 type FeedDetailScreenProps = CompositeScreenProps<
   StackScreenProps<FeedStackParamList, typeof feedNavigations.FEED_DETAIL>,
@@ -35,15 +37,16 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
   const { id } = route.params;
   const { data: post, isPending, isError } = useGetPost(id);
   const insets = useSafeAreaInsets();
-  const {setMoveLocation} = useLocationStore();
+  const { setMoveLocation } = useLocationStore();
+  const detailOption = useModal()
 
   if (isPending || isError) {
     return <></>;
   }
 
   const handlePressLocation = () => {
-    const {latitude, longitude} = post;
-    setMoveLocation({latitude, longitude});
+    const { latitude, longitude } = post;
+    setMoveLocation({ latitude, longitude });
     navigation.navigate(mainNavigations.HOME, {
       screen: mapNavigations.MAP_HOME,
     });
@@ -52,10 +55,10 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
   return (
     <>
       <ScrollView
-        scrollIndicatorInsets={{right: 1}} //스크롤 오른쪽 고정(IOS에서 종종 왼쪽으로 가기 때문)
+        scrollIndicatorInsets={{ right: 1 }} //스크롤 오른쪽 고정(IOS에서 종종 왼쪽으로 가기 때문)
         style={
           insets.bottom
-            ? [styles.container, {marginBottom: insets.bottom + 50}]
+            ? [styles.container, { marginBottom: insets.bottom + 50 }]
             : [styles.container, styles.scrollNoInsets]
         }>
         <SafeAreaView style={styles.headerContainer}>
@@ -66,7 +69,7 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
               color={colors.WHITE}
               onPress={() => navigation.goBack()}
             />
-            <Ionicons name="ellipsis-vertical" size={30} color={colors.WHITE} />
+            <Ionicons name="ellipsis-vertical" size={30} color={colors.WHITE} onPress={detailOption.show} />
           </View>
         </SafeAreaView>
 
@@ -75,11 +78,10 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
             <Image
               style={styles.image}
               source={{
-                uri: `${
-                  Platform.OS === 'ios'
-                    ? 'http://localhost:3030/'
-                    : 'http://10.0.2.2:3030/'
-                }${post.images[0].uri}`,
+                uri: `${Platform.OS === 'ios'
+                  ? 'http://localhost:3030/'
+                  : 'http://10.0.2.2:3030/'
+                  }${post.images[0].uri}`,
               }}
               resizeMode="cover"
             />
@@ -121,7 +123,7 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
                 <View
                   style={[
                     styles.markerColor,
-                    {backgroundColor: colorHex[post.color]},
+                    { backgroundColor: colorHex[post.color] },
                   ]}
                 />
               </View>
@@ -137,14 +139,14 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
         )}
       </ScrollView>
 
-      <View style={[styles.bottomContainer, {paddingBottom: insets.bottom}]}>
+      <View style={[styles.bottomContainer, { paddingBottom: insets.bottom }]}>
         <View
           style={[
             styles.tabContainer,
             insets.bottom === 0 && styles.tabContainerNoInsets,
           ]}>
           <Pressable
-            style={({pressed}) => [
+            style={({ pressed }) => [
               pressed && styles.bookmarkPressedContainer,
               styles.bookmarkContainer,
             ]}>
@@ -158,6 +160,11 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
           />
         </View>
       </View>
+
+      <FeedDetailOption
+        isVisible={detailOption.isVisible}
+        hideOption={detailOption.hide}
+      />
     </>
   );
 }
