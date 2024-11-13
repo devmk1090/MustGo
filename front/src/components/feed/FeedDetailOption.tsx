@@ -6,7 +6,7 @@ import useDetailStore from '@/store/useDetailPostStore';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FeedStackParamList } from '@/navigations/stack/FeedStackNavigator';
 import { Alert } from 'react-native';
-import { alerts } from '@/constants';
+import { alerts, feedNavigations } from '@/constants';
 
 interface FeedDetailOptionProps {
   isVisible: boolean;
@@ -43,24 +43,40 @@ function FeedDetailOption({ isVisible, hideOption }: FeedDetailOptionProps) {
     ]);
   };
 
-    return (
-      <CompoundOption isVisible={isVisible} hideOption={hideOption}>
-        <CompoundOption.Background>
-          <CompoundOption.Container>
-            <CompoundOption.Button isDanger onPress={handleDeletePost}>
-              삭제하기
-            </CompoundOption.Button>
-            <CompoundOption.Divider />
-            <CompoundOption.Button>수정하기</CompoundOption.Button>
-          </CompoundOption.Container>
-          <CompoundOption.Container>
-            <CompoundOption.Button onPress={hideOption}>
-              취소
-            </CompoundOption.Button>
-          </CompoundOption.Container>
-        </CompoundOption.Background>
-      </CompoundOption>
-    );
-  }
+  const handleEditPost = () => {
+    if (!detailPost) {
+      return;
+    }
 
-  export default FeedDetailOption;
+    navigation.navigate(feedNavigations.EDIT_POST, {
+      location: {
+        latitude: detailPost.latitude,
+        longitude: detailPost.longitude,
+      },
+    });
+    hideOption();
+  };
+
+  return (
+    <CompoundOption isVisible={isVisible} hideOption={hideOption}>
+      <CompoundOption.Background>
+        <CompoundOption.Container>
+          <CompoundOption.Button isDanger onPress={handleDeletePost}>
+            삭제하기
+          </CompoundOption.Button>
+          <CompoundOption.Divider />
+          <CompoundOption.Button onPress={handleEditPost}>
+            수정하기
+          </CompoundOption.Button>
+        </CompoundOption.Container>
+        <CompoundOption.Container>
+          <CompoundOption.Button onPress={hideOption}>
+            취소
+          </CompoundOption.Button>
+        </CompoundOption.Container>
+      </CompoundOption.Background>
+    </CompoundOption>
+  );
+}
+
+export default FeedDetailOption;

@@ -1,14 +1,17 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import {colors, feedNavigations} from '@/constants';
+import { colors, feedNavigations } from '@/constants';
 import FeedHomeScreen from '@/screens/feed/FeedHomeScreen';
 import FeedHomeHeaderLeft from '@/components/feed/FeedHomeHeaderLeft';
 import FeedDetailScreen from '@/screens/feed/FeedDetailScreen';
+import { LatLng } from 'react-native-maps';
+import EditPostScreen from '@/components/feed/EditPostScreen';
 
 export type FeedStackParamList = {
   [feedNavigations.FEED_HOME]: undefined;
-    [feedNavigations.FEED_DETAIL]: {id: number};
+  [feedNavigations.FEED_DETAIL]: { id: number };
+  [feedNavigations.EDIT_POST]: { location: LatLng };
 };
 
 const Stack = createStackNavigator<FeedStackParamList>();
@@ -32,7 +35,7 @@ function FeedStackNavigator() {
       <Stack.Screen
         name={feedNavigations.FEED_HOME}
         component={FeedHomeScreen}
-        options={({navigation}) => ({
+        options={({ navigation }) => ({
           headerTitle: '피드',
           headerLeft: () => FeedHomeHeaderLeft(navigation),
         })}
@@ -48,7 +51,14 @@ function FeedStackNavigator() {
           },
         }}
       />
-    </Stack.Navigator>
+      <Stack.Screen
+        name={feedNavigations.EDIT_POST}
+        component={EditPostScreen}
+        options={{
+          headerTitle: '장소 수정',
+        }}
+      />
+    </Stack.Navigator >
   );
 }
 
