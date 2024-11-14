@@ -31,5 +31,27 @@ const deletePost = async (id: number) => {
   return data;
 };
 
-export {createPost, getPost, getPosts, deletePost};
-export type {ResponsePost, RequestCreatePost, ResponseSinglePost};
+//Omit을 이용해서 id, longtitude, latitude, address 는 제외
+type RequestUpdatePost = {
+  id: number;
+  body: Omit<Post, 'id' | 'longitude' | 'latitude' | 'address'> & {
+    imageUris: ImageUri[];
+  };
+};
+
+const updatePost = async ({
+  id,
+  body,
+}: RequestUpdatePost): Promise<ResponseSinglePost> => {
+  const {data} = await axiosInstance.patch(`/posts/${id}`, body);
+
+  return data;
+};
+
+export {createPost, getPost, getPosts, deletePost, updatePost};
+export type {
+  ResponsePost,
+  RequestCreatePost,
+  ResponseSinglePost,
+  RequestUpdatePost,
+};

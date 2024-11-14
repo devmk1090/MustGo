@@ -14,6 +14,7 @@ import {useNavigation} from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 import {FeedStackParamList} from '@/navigations/stack/FeedStackNavigator';
+import useMutateCreatePost from '@/hooks/queries/useMutateCreatePost';
 import usePermission from '@/hooks/usePermission';
 import useImagePicker from '@/hooks/useImagePicker';
 import useGetAddress from '@/hooks/useGetAddress';
@@ -31,6 +32,7 @@ import {getDateWithSeparator, validateAddPost} from '@/utils';
 import {colors} from '@/constants';
 import {MarkerColor} from '@/types';
 import useDetailStore from '@/store/useDetailPostStore';
+import useMutateUpdatePost from '@/hooks/queries/useMutateUpdatePost';
 
 interface PostFormProps {
   isEdit?: boolean;
@@ -40,8 +42,10 @@ interface PostFormProps {
 function PostForm({location, isEdit = false}: PostFormProps) {
   const navigation = useNavigation<StackNavigationProp<FeedStackParamList>>();
   const descriptionRef = useRef<TextInput | null>(null);
+  const createPost = useMutateCreatePost();
+  const updatePost = useMutateUpdatePost();
   const {detailPost} = useDetailStore();
-  const isEditMode = isEdit && detailPost; //수정 상태일때는 Zustand에 저장한 정보를 가져온다
+  const isEditMode = isEdit && detailPost;
   const address = useGetAddress(location);
   const addPost = useForm({
     initialValue: {
@@ -92,8 +96,24 @@ function PostForm({location, isEdit = false}: PostFormProps) {
     };
 
     if (isEditMode) {
+      updatePost.mutate(
+        {
+          id: detailPost.id,
+          body,
+        },
+        {
+          onSuccess: () => navigation.goBack(),
+        },
+      );
       return;
     }
+
+    createPost.mutate(
+      {address, ...location, ...body},
+      {
+        onSuccess: () => navigation.goBack(),
+      },
+    );
   };
 
   useEffect(() => {
