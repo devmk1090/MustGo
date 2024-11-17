@@ -1,3 +1,4 @@
+
 const queryKeys = {
   AUTH: 'auth',
   GET_ACCESS_TOKEN: 'getAccessToken',
@@ -7,6 +8,8 @@ const queryKeys = {
   POST: 'post',
   GET_POST: 'getPost',
   GET_POSTS: 'getPosts',
+  FAVORITE: 'favorite',
+  GET_FAVORITE_POSTS: 'getFavoritePosts',
 } as const;
 
 const storageKeys = {
