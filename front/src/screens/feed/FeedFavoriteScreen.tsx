@@ -6,6 +6,7 @@ import {colors} from '@/constants';
 function FeedFavoriteScreen() {
     return (
       <SafeAreaView style={styles.container}>
+        <FeedFavoriteScreen />
       </SafeAreaView>
     );
   }
