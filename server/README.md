@@ -272,7 +272,7 @@ ResponsePost[];
 
 ```js
 {
-  query: string;
+  query: string; // title 또는 description
   page: number;
 }
 ```

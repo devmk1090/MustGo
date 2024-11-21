@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import MapView, { Callout, LatLng, LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { alerts, colors, mapNavigations } from '@/constants';
+import { alerts, colors, mapNavigations, numbers } from '@/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -14,10 +14,11 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import useUserLocation from '@/hooks/useUserLocation';
 import usePermission from '@/hooks/usePermission';
 import mapStyle from '@/style/mapStyle';
-import CustomMarker from '@/components/CustomMarker';
+import CustomMarker from '@/components/common/CustomMarker';
 import useGetMarkers from '@/hooks/queries/useGetMarkers';
-import MarkerModal from '@/components/MarkerModal';
+import MarkerModal from '@/components/map/MarkerModal';
 import useModal from '@/hooks/useModal';
+import useMoveMapView from '@/hooks/useMoveMapView';
 
 type Navigation = CompositeNavigationProp<
     StackNavigationProp<MapStackParamList>,
@@ -27,21 +28,14 @@ type Navigation = CompositeNavigationProp<
 function MapHomeScreen() {
     const inset = useSafeAreaInsets();
     const navigation = useNavigation<Navigation>();
-    const mapRef = useRef<MapView | null>(null);
     const { userLocation, isUserLocationError } = useUserLocation();
     const [selectLocation, setSelectLocation] = useState<LatLng | null>();
     const [markerId, setMarkerId] = useState<number | null>(null);
     const markerModal = useModal();
     const { data: markers = [] } = useGetMarkers();
-    usePermission('LOCATION')
+    const {mapRef, moveMapView, handleChangeDelta} = useMoveMapView();
 
-    const moveMapView = (coordinate: LatLng) => {
-        mapRef.current?.animateToRegion({
-            ...coordinate,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-        });
-    };
+    usePermission('LOCATION')
 
     const handlePressMarker = (id: number, coordinate: LatLng) => {
         setMarkerId(id);
@@ -87,10 +81,10 @@ function MapHomeScreen() {
                 showsMyLocationButton={false}
                 customMapStyle={mapStyle}
                 onLongPress={handleLongPressMapView}
+                onRegionChangeComplete={handleChangeDelta}
                 region={{
                     ...userLocation,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
+                    ...numbers.INITIAL_DELTA
                 }}>
                 {markers.map(({ id, color, score, ...coordinate }) => (
                     <CustomMarker
