@@ -1,4 +1,5 @@
 import Calendar from '@/components/calendar/Calendar';
+import EventList from '@/components/calendar/EventList';
 import { colors } from '@/constants';
 import useGetCalendarPosts from '@/hooks/queries/useGetCalendarPosts';
 import { getMonthYearDetails, getNewMonthYear } from '@/utils';
@@ -36,6 +37,7 @@ function CalendarHomeScreen() {
         selectedDate={selectedDate}
         onPressDate={handlePressDate}
       />
+      <EventList posts={posts[selectedDate]} />
     </SafeAreaView>
   );
 }
