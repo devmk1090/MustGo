@@ -7,6 +7,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DayOfWeeks from './DayOfWeeks';
 import { MonthYear, isSameAsCurrentDate } from '@/utils';
 import DateBox from './DateBox';
+import YearSelector from './YearSelector';
+import useModal from '@/hooks/useModal';
 
 interface CalendarProps<T> {
   monthYear: MonthYear;
@@ -24,7 +26,13 @@ function Calendar<T>({
   onChangeMonth,
 }: CalendarProps<T>) {
   const { month, year, lastDate, firstDOW } = monthYear;
+  const yearSelector = useModal();
 
+  const handleChangeYear = (selectYear: number) => {
+    onChangeMonth((selectYear - year) * 12);
+    yearSelector.hide();
+  };
+  
   return (
     <>
       <View style={styles.headerContainer}>
@@ -70,6 +78,13 @@ function Calendar<T>({
           numColumns={7}
         />
       </View>
+
+      <YearSelector
+        isVisible={yearSelector.isVisible}
+        currentYear={year}
+        onChangeYear={handleChangeYear}
+        hide={yearSelector.hide}
+      />
     </>
   );
 }
