@@ -1,5 +1,5 @@
 import { colors } from '@/constants';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FlatList, Text } from 'react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -9,6 +9,8 @@ import { MonthYear, isSameAsCurrentDate } from '@/utils';
 import DateBox from './DateBox';
 import YearSelector from './YearSelector';
 import useModal from '@/hooks/useModal';
+import { useNavigation } from '@react-navigation/native';
+import CalendarHomeHeaderRight from './CalendarHomeHeaderRight';
 
 interface CalendarProps<T> {
   monthYear: MonthYear;
@@ -16,6 +18,7 @@ interface CalendarProps<T> {
   schedules: Record<number, T>;
   onPressDate: (date: number) => void;
   onChangeMonth: (increment: number) => void;
+  moveToToday: () => void
 }
 
 function Calendar<T>({
@@ -24,8 +27,10 @@ function Calendar<T>({
   schedules,
   onPressDate,
   onChangeMonth,
+  moveToToday,
 }: CalendarProps<T>) {
   const { month, year, lastDate, firstDOW } = monthYear;
+  const navigation = useNavigation();
   const yearSelector = useModal();
 
   const handleChangeYear = (selectYear: number) => {
@@ -33,6 +38,12 @@ function Calendar<T>({
     yearSelector.hide();
   };
   
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => CalendarHomeHeaderRight(moveToToday)
+    })
+  }, [moveToToday, navigation]);
+
   return (
     <>
       <View style={styles.headerContainer}>
