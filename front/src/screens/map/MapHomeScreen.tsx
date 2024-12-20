@@ -5,6 +5,7 @@ import { alerts, colors, mapNavigations, numbers } from '@/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Toast from 'react-native-toast-message';
 
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -33,7 +34,7 @@ function MapHomeScreen() {
     const [markerId, setMarkerId] = useState<number | null>(null);
     const markerModal = useModal();
     const { data: markers = [] } = useGetMarkers();
-    const {mapRef, moveMapView, handleChangeDelta} = useMoveMapView();
+    const { mapRef, moveMapView, handleChangeDelta } = useMoveMapView();
 
     usePermission('LOCATION')
 
@@ -64,7 +65,11 @@ function MapHomeScreen() {
 
     const handlePressUserLocation = () => {
         if (isUserLocationError) {
-            // 에러메세지
+            Toast.show({
+                type: 'error',
+                text1: '위치 권한을 허용해주세요.',
+                position: 'bottom',
+            });
             return;
         }
         moveMapView(userLocation)
