@@ -62,7 +62,7 @@ function useSearchLocation(keyword: string, location: LatLng) {
           },
         );
 
-        setHasNextPage(!data.meta.is_end)
+        setHasNextPage(!data.meta.is_end) // 페이징 기능
         setRegionInfo(data.documents)
       } catch (error) {
         setRegionInfo([])
