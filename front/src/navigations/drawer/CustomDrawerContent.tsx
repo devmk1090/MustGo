@@ -1,17 +1,19 @@
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { Image, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import useAuth from "@/hooks/queries/useAuth";
-import { colors } from '@/constants';
+import { colors, mainNavigations, settingNavigations } from '@/constants';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
-    const {logoutMutation, getProfileQuery} = useAuth();
+    const { getProfileQuery } = useAuth();
     const { email, nickname, imageUri, kakaoImageUri } = getProfileQuery.data || {};
 
-    const handleLogout = () => {
-        logoutMutation.mutate(null);
-    };
-
+    const handlePressSetting = () => {
+        props.navigation.navigate(mainNavigations.SETTING, {
+          screen: settingNavigations.SETTING_HOME,
+        });
+      };
     return (
         <SafeAreaView style={styles.container}>
             <DrawerContentScrollView
@@ -38,14 +40,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
                 </View>
                 <DrawerItemList {...props} />
             </DrawerContentScrollView>
-            <Pressable
-                onPress={handleLogout}
-                style={{
-                    alignItems: 'flex-end',
-                    padding: 10,
-                }}>
-                <Text>로그아웃</Text>
-            </Pressable>
+            <View style={styles.bottomContainer}>
+                <Pressable style={styles.bottomMenu} onPress={handlePressSetting}>
+                    <MaterialIcons name={'settings'} color={colors.GRAY_700} size={18} />
+                    <Text style={styles.bottomMenuText}>설정</Text>
+                </Pressable>
+            </View>
         </SafeAreaView>
     );
 }
@@ -77,6 +77,24 @@ const styles = StyleSheet.create({
         height: '100%',
         borderRadius: 35,
     },
+    bottomContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        borderTopWidth: 1,
+        borderTopColor: colors.GRAY_200,
+      },
+      bottomMenu: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+      },
+      bottomMenuText: {
+        fontWeight: '600',
+        fontSize: 15,
+        color: colors.GRAY_700,
+      },
 });
 
 export default CustomDrawerContent;

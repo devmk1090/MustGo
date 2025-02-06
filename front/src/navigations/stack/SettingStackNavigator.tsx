@@ -24,7 +24,7 @@ function SettingStackNavigator() {
     <Stack.Navigator
       screenOptions={{
         cardStyle: {
-          backgroundColor: 'white',
+          backgroundColor: colors.GRAY_100,
         },
         headerStyle: {
           shadowColor: 'gray',
