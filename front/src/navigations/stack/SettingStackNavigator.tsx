@@ -14,7 +14,7 @@ import SettingHeaderLeft from '@/components/setting/SettingHeaderLeft';
 
 export type SettingStackParamList = {
   [settingNavigations.SETTING_HOME]: undefined;
-  [settingNavigations.EDIT_PROFILE]: { id: number };
+  [settingNavigations.EDIT_PROFILE]: undefined;
 };
 
 const Stack = createStackNavigator<SettingStackParamList>();
