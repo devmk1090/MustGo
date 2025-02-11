@@ -8,9 +8,10 @@ import { Alert } from "react-native";
 
 interface UseImagePickerProps {
   initialImages: ImageUri[];
+  mode?: 'multiple' | 'single'
 }
 
-function useImagePicker({ initialImages = [] }: UseImagePickerProps) {
+function useImagePicker({ initialImages = [], mode = 'multiple' }: UseImagePickerProps) {
 
   const [imageUris, setImageUris] = useState(initialImages);
   const uploadImages = useMutateImages();
@@ -40,7 +41,7 @@ function useImagePicker({ initialImages = [] }: UseImagePickerProps) {
       mediaType: 'photo',
       multiple: true,
       includeBase64: true,
-      maxFiles: 5,
+      maxFiles: mode === 'multiple' ? 5 : 1,
       cropperChooseText: '완료',
       cropperCancelText: '취소',
     }).then(images => {

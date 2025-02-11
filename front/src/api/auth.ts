@@ -45,6 +45,17 @@ const getProfile = async (): Promise<ResponseProfile> => {
     return data;
 };
 
+type RequestProfile = Omit<
+  Profile,
+  'id' | 'email' | 'kakaoImageUri' | 'loginType'
+>;
+
+const editProfile = async (body: RequestProfile): Promise<ResponseProfile> => {
+    const {data} = await axiosInstance.patch('/auth/me', body);
+  
+    return data;
+  };
+
 const getAccessToken = async (): Promise<ResponseToken> => {
     const refreshToken = await getEncryptStorage('refreshToken');
 
@@ -61,5 +72,5 @@ const logout = async () => {
     await axiosInstance.post('/auth/logout');
 };
 
-export { postSignup, postLogin, getProfile, getAccessToken, logout, kakaoLogin };
-export type { RequestUser, ResponseToken, ResponseProfile };
+export { postSignup, postLogin, getProfile, getAccessToken, logout, kakaoLogin, editProfile };
+export type { RequestUser, ResponseToken, ResponseProfile, RequestProfile };
