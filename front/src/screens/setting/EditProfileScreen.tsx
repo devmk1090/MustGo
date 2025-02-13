@@ -1,4 +1,5 @@
 import InputField from '@/components/common/InputField';
+import EditProfileImageOption from '@/components/setting/EditProfileImageOption';
 import { colors } from '@/constants';
 import useAuth from '@/hooks/queries/useAuth';
 import useForm from '@/hooks/useForm';
@@ -8,7 +9,7 @@ import { SettingStackParamList } from '@/navigations/stack/SettingStackNavigator
 import { validateEditProfile } from '@/utils';
 import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Keyboard, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Image } from 'react-native-reanimated/lib/typescript/Animated';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -20,9 +21,10 @@ const EditProfileScreen = ({ navigation }: EditProfileScreenProps) => {
 
     const imageOption = useModal();
     const imagePicker = useImagePicker({
-        initialImages: imageUri ? [{ uri: imageUri }] : [],
+        initialImages: imageUri ? [{uri: imageUri}] : [],
         mode: 'single',
-    });
+        onSettled: imageOption.hide,
+      });
 
     const editProfile = useForm({
         initialValue: { nickname: nickname ?? '' },
@@ -30,7 +32,9 @@ const EditProfileScreen = ({ navigation }: EditProfileScreenProps) => {
     });
 
     const handlePressImage = () => {
-      };
+        imageOption.show();
+        Keyboard.dismiss();
+    };
 
     return (
         <View style={styles.container}>
@@ -76,6 +80,12 @@ const EditProfileScreen = ({ navigation }: EditProfileScreenProps) => {
                 error={editProfile.errors.nickname}
                 touched={editProfile.touched.nickname}
                 placeholder="닉네임을 입력해주세요."
+            />
+
+            <EditProfileImageOption
+                isVisible={imageOption.isVisible}
+                hideOption={imageOption.hide}
+                onChangeImage={imagePicker.handleChange}
             />
         </View>
     )
