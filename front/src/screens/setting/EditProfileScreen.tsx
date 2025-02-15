@@ -1,6 +1,7 @@
 import InputField from '@/components/common/InputField';
+import EditProfileHeaderRight from '@/components/setting/EditProfileHeaderRight';
 import EditProfileImageOption from '@/components/setting/EditProfileImageOption';
-import { colors } from '@/constants';
+import { colors, errorMessages } from '@/constants';
 import useAuth from '@/hooks/queries/useAuth';
 import useForm from '@/hooks/useForm';
 import useImagePicker from '@/hooks/useImagePicker';
@@ -8,9 +9,10 @@ import useModal from '@/hooks/useModal';
 import { SettingStackParamList } from '@/navigations/stack/SettingStackNavigator';
 import { validateEditProfile } from '@/utils';
 import { StackScreenProps } from '@react-navigation/stack';
-import React from 'react';
-import { Keyboard, Platform, Pressable, StyleSheet, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'react-native-reanimated/lib/typescript/Animated';
+import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type EditProfileScreenProps = StackScreenProps<SettingStackParamList>;
@@ -21,10 +23,10 @@ const EditProfileScreen = ({ navigation }: EditProfileScreenProps) => {
 
     const imageOption = useModal();
     const imagePicker = useImagePicker({
-        initialImages: imageUri ? [{uri: imageUri}] : [],
+        initialImages: imageUri ? [{ uri: imageUri }] : [],
         mode: 'single',
         onSettled: imageOption.hide,
-      });
+    });
 
     const editProfile = useForm({
         initialValue: { nickname: nickname ?? '' },
@@ -35,6 +37,35 @@ const EditProfileScreen = ({ navigation }: EditProfileScreenProps) => {
         imageOption.show();
         Keyboard.dismiss();
     };
+
+    const handleSubmit = () => {
+        profileMutation.mutate(
+            {
+                ...editProfile.values,
+                imageUri: imagePicker.imageUris[0]?.uri,
+            },
+            {
+                onSuccess: () =>
+                    Toast.show({
+                        type: 'success',
+                        text1: '프로필이 변경되었습니다.',
+                        position: 'bottom',
+                    }),
+                onError: error =>
+                    Toast.show({
+                        type: 'error',
+                        text1: error.response?.data.message || errorMessages.UNEXPECT_ERROR,
+                        position: 'bottom',
+                    }),
+            },
+        );
+    };
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => EditProfileHeaderRight(handleSubmit),
+        });
+    }, [handleSubmit]);
 
     return (
         <View style={styles.container}>
@@ -75,12 +106,18 @@ const EditProfileScreen = ({ navigation }: EditProfileScreenProps) => {
                     )}
                 </Pressable>
             </View>
+            
             <InputField
                 {...editProfile.getTextInputProps('nickname')}
                 error={editProfile.errors.nickname}
                 touched={editProfile.touched.nickname}
                 placeholder="닉네임을 입력해주세요."
             />
+
+            <Pressable style={styles.deleteAccountContainer}>
+                <Ionicons name="remove-circle-sharp" size={18} color={colors.RED_500} />
+                <Text style={styles.deleteAccountText}>회원탈퇴</Text>
+            </Pressable>
 
             <EditProfileImageOption
                 isVisible={imageOption.isVisible}
