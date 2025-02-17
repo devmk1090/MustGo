@@ -5,6 +5,7 @@ import { alerts, colors, mapNavigations, numbers } from '@/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Toast from 'react-native-toast-message';
 
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -19,6 +20,7 @@ import useGetMarkers from '@/hooks/queries/useGetMarkers';
 import MarkerModal from '@/components/map/MarkerModal';
 import useModal from '@/hooks/useModal';
 import useMoveMapView from '@/hooks/useMoveMapView';
+import useLocationStore from '@/store/useLocationStore';
 
 type Navigation = CompositeNavigationProp<
     StackNavigationProp<MapStackParamList>,
@@ -29,11 +31,11 @@ function MapHomeScreen() {
     const inset = useSafeAreaInsets();
     const navigation = useNavigation<Navigation>();
     const { userLocation, isUserLocationError } = useUserLocation();
-    const [selectLocation, setSelectLocation] = useState<LatLng | null>();
+    const { selectLocation, setSelectLocation } = useLocationStore();
     const [markerId, setMarkerId] = useState<number | null>(null);
     const markerModal = useModal();
     const { data: markers = [] } = useGetMarkers();
-    const {mapRef, moveMapView, handleChangeDelta} = useMoveMapView();
+    const { mapRef, moveMapView, handleChangeDelta } = useMoveMapView();
 
     usePermission('LOCATION')
 
@@ -64,10 +66,18 @@ function MapHomeScreen() {
 
     const handlePressUserLocation = () => {
         if (isUserLocationError) {
-            // 에러메세지
+            Toast.show({
+                type: 'error',
+                text1: '위치 권한을 허용해주세요.',
+                position: 'bottom',
+            });
             return;
         }
         moveMapView(userLocation)
+    };
+
+    const handlePressSearch = () => {
+        navigation.navigate(mapNavigations.SEARCH_LOCATION);
     };
 
     return (
@@ -109,6 +119,9 @@ function MapHomeScreen() {
             <View style={styles.buttonList}>
                 <Pressable style={styles.mapButton} onPress={handlePressAddPost}>
                     <MaterialIcons name="add" color={colors.WHITE} size={25} />
+                </Pressable>
+                <Pressable style={styles.mapButton} onPress={handlePressSearch}>
+                    <Ionicons name="search" color={colors.WHITE} size={25} />
                 </Pressable>
                 <Pressable style={styles.mapButton} onPress={handlePressUserLocation}>
                     <MaterialIcons name="my-location" color={colors.WHITE} size={25} />
