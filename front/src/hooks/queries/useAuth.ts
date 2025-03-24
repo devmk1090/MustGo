@@ -6,6 +6,7 @@ import { removeHeader, setHeader } from "@/utils/header";
 import { useEffect } from "react";
 import queryClient from "@/api/queryClient";
 import { numbers, queryKeys, storageKeys } from "@/constants";
+import { Category, Profile } from "@/types";
 
 function useSignup(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
@@ -71,10 +72,20 @@ function useGetRefreshToken() {
   return { isSuccess, isError };
 }
 
-function useGetProfile(queryOptions?: UseQueryCustomOptions<ResponseProfile>) {
+type ResponseSelectProfile = {categories: Category} & Profile;
+
+const transformProfileCategory = (data: ResponseProfile): ResponseSelectProfile => {
+  const {BLUE, GREEN, PURPLE, RED, YELLOW, ...rest} = data;
+  const categories = {BLUE, GREEN, PURPLE, RED, YELLOW};
+
+  return {categories, ...rest};
+};
+
+function useGetProfile(queryOptions?: UseQueryCustomOptions<ResponseProfile, ResponseSelectProfile>) {
   return useQuery({
-    queryKey: [queryKeys.AUTH, queryKeys.GET_PROFILE],
     queryFn: getProfile,
+    queryKey: [queryKeys.AUTH, queryKeys.GET_PROFILE],
+    select: transformProfileCategory,
     ...queryOptions,
   });
 }
