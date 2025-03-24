@@ -10,8 +10,7 @@ import { SettingStackParamList } from '@/navigations/stack/SettingStackNavigator
 import { validateEditProfile } from '@/utils';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect } from 'react';
-import { Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Image } from 'react-native-reanimated/lib/typescript/Animated';
+import { Image, Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
