@@ -1,6 +1,24 @@
-import { colors } from '@/constants';
+import InputField from '@/components/common/InputField';
+import { colorHex, colors } from '@/constants';
+import { MarkerColor } from '@/types';
 import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+const categoryList: MarkerColor[] = [
+    'RED',
+    'YELLOW',
+    'GREEN',
+    'BLUE',
+    'PURPLE',
+];
+
+const categoryPlaceholderList = [
+    'ex) 식당',
+    'ex) 카페',
+    'ex) 병원',
+    'ex) 숙소',
+    'ex) 여행',
+];
 
 interface EditCategoryScreenProps { }
 
@@ -15,6 +33,22 @@ const EditCategoryScreen = ({ }: EditCategoryScreenProps) => {
                 <Text style={styles.infoText}>
                     마커 필터링, 범례 표시에 사용할 수 있어요.
                 </Text>
+            </View>
+
+            <View style={styles.formContainer}>
+                {categoryList.map((color, i) => {
+                    return (
+                        <View key={i} style={[styles.categoryContainer]}>
+                            <View
+                                style={[styles.category, { backgroundColor: colorHex[color] }]}
+                            />
+                            <View style={styles.inputContainer}>
+                                <InputField />
+                                 
+                            </View>
+                        </View>
+                    );
+                })}
             </View>
         </ScrollView>
     </SafeAreaView>
@@ -41,7 +75,24 @@ const styles = StyleSheet.create({
     infoText: {
         fontSize: 15,
         fontWeight: '600',
-      },
+    },
+    formContainer: {
+        gap: 15,
+    },
+    categoryContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 20,
+    },
+    category: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: colors[theme].PINK_400,
+    },
+    inputContainer: {
+        flex: 1,
+    },
 });
 
 export default EditCategoryScreen;
