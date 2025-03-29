@@ -1,8 +1,13 @@
 import InputField from '@/components/common/InputField';
 import { colorHex, colors } from '@/constants';
+import useAuth from '@/hooks/queries/useAuth';
+import useForm from '@/hooks/useForm';
+import { SettingStackParamList } from '@/navigations/stack/SettingStackNavigator';
 import { MarkerColor } from '@/types';
-import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { validateCategory } from '@/utils';
+import { StackScreenProps } from '@react-navigation/stack';
+import React, { useEffect, useRef } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const categoryList: MarkerColor[] = [
     'RED',
@@ -20,9 +25,33 @@ const categoryPlaceholderList = [
     'ex) 여행',
 ];
 
-interface EditCategoryScreenProps { }
+type EditCategoryScreenProps = StackScreenProps<SettingStackParamList>;
 
-const EditCategoryScreen = ({ }: EditCategoryScreenProps) => {
+const EditCategoryScreen = ({ navigation }: EditCategoryScreenProps) => {
+    const refArray = useRef<(TextInput | null)[]>([])
+    const { getProfileQuery } = useAuth()
+    const { categories } = getProfileQuery.data || {};
+    const category = useForm({
+        initialValue: {
+            RED: categories?.RED ?? '',
+            YELLOW: categories?.YELLOW ?? '',
+            GREEN: categories?.GREEN ?? '',
+            BLUE: categories?.BLUE ?? '',
+            PURPLE: categories?.PURPLE ?? '',
+        },
+        validate: validateCategory,
+    });
+
+    const handleSubmit = () => {
+        console.log(category.values)
+    }
+
+    useEffect(() => {
+        navigation.setOptions({
+            
+        });
+    }, [handleSubmit]);
+
     return <SafeAreaView style={styles.container}>
         <ScrollView style={styles.contentContainer}
             scrollIndicatorInsets={{ right: 1 }}>
@@ -43,8 +72,21 @@ const EditCategoryScreen = ({ }: EditCategoryScreenProps) => {
                                 style={[styles.category, { backgroundColor: colorHex[color] }]}
                             />
                             <View style={styles.inputContainer}>
-                                <InputField />
-                                 
+                                <InputField
+                                    {...category.getTextInputProps(color)}
+                                    error={category.errors[color]}
+                                    touched={category.touched[color]}
+                                    placeholder={categoryPlaceholderList[i]}
+                                    ref={el => (refArray.current[i] = el)}
+                                    autoFocus={color === 'RED'}
+                                    maxLength={10}
+                                    returnKeyType="next"
+                                    blurOnSubmit={false}
+                                    onSubmitEditing={() => {
+                                        refArray.current[i + 1]?.focus();
+                                    }}
+                                />
+
                             </View>
                         </View>
                     );
@@ -88,7 +130,6 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: colors[theme].PINK_400,
     },
     inputContainer: {
         flex: 1,
