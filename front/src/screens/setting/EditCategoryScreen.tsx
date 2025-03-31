@@ -1,5 +1,6 @@
 import InputField from '@/components/common/InputField';
-import { colorHex, colors } from '@/constants';
+import EditCategoryHeaderRight from '@/components/setting/EditCategoryHeaderRight';
+import { colorHex, colors, errorMessages } from '@/constants';
 import useAuth from '@/hooks/queries/useAuth';
 import useForm from '@/hooks/useForm';
 import { SettingStackParamList } from '@/navigations/stack/SettingStackNavigator';
@@ -8,6 +9,7 @@ import { validateCategory } from '@/utils';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useEffect, useRef } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const categoryList: MarkerColor[] = [
     'RED',
@@ -29,7 +31,7 @@ type EditCategoryScreenProps = StackScreenProps<SettingStackParamList>;
 
 const EditCategoryScreen = ({ navigation }: EditCategoryScreenProps) => {
     const refArray = useRef<(TextInput | null)[]>([])
-    const { getProfileQuery } = useAuth()
+    const {getProfileQuery, categoryMutation} = useAuth();
     const { categories } = getProfileQuery.data || {};
     const category = useForm({
         initialValue: {
@@ -43,12 +45,25 @@ const EditCategoryScreen = ({ navigation }: EditCategoryScreenProps) => {
     });
 
     const handleSubmit = () => {
-        console.log(category.values)
+        categoryMutation.mutate(category.values, {
+            onSuccess: () =>
+              Toast.show({
+                type: 'success',
+                text1: '저장되었습니다.',
+                position: 'bottom',
+              }),
+            onError: error =>
+              Toast.show({
+                type: 'error',
+                text1: error.response?.data.message || errorMessages.UNEXPECT_ERROR,
+                position: 'bottom',
+              }),
+          });
     }
 
     useEffect(() => {
         navigation.setOptions({
-            
+            headerRight: () => EditCategoryHeaderRight(handleSubmit)
         });
     }, [handleSubmit]);
 
