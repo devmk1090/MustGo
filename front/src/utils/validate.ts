@@ -1,3 +1,5 @@
+import { Category } from "@/types";
+
 function isBlank(value: string) {
   return value.trim() === '';
 }
@@ -55,12 +57,24 @@ function validateEditProfile(values: { nickname: string }) {
   const errors = {
     nickname: '',
   }
-  
+
   if (isBlank(values.nickname)) {
     errors.nickname = '닉네임을 입력해주세요.';
   }
 
   return errors;
-
 }
-export { validateLogin, validateSignup, validateAddPost, validateEditProfile };
+
+function validateCategory(values: Category) {
+  const errors = {
+    RED: '',
+    GREEN: '',
+    YELLOW: '',
+    BLUE: '',
+    PURPLE: '',
+  };
+
+  return errors;
+}
+
+export { validateLogin, validateSignup, validateAddPost, validateEditProfile, validateCategory };

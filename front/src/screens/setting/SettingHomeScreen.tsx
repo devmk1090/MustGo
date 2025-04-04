@@ -16,6 +16,10 @@ const SettingHomeScreen = ({ navigation }: SettingHomeScreenProps) => {
         navigation.navigate(settingNavigations.EDIT_PROFILE);
       };
     
+      const handlePressEditCategory = () => {
+        navigation.navigate(settingNavigations.EDIT_CATEGORY);
+      };
+
       const handlePressLogout = () => {
         logoutMutation.mutate(null);
       };
@@ -25,7 +29,7 @@ const SettingHomeScreen = ({ navigation }: SettingHomeScreenProps) => {
       <ScrollView>
         <View style={styles.space} />
         <SettingItem title="프로필 수정" onPress={handlePressEditProfile} />
-        <SettingItem title="마커 카테고리 설정" />
+        <SettingItem title="마커 카테고리 설정" onPress={handlePressEditCategory} />
         <View style={styles.space} />
         <SettingItem
           title="로그아웃"

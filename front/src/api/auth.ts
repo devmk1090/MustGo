@@ -72,5 +72,15 @@ const logout = async () => {
     await axiosInstance.post('/auth/logout');
 };
 
-export { postSignup, postLogin, getProfile, getAccessToken, logout, kakaoLogin, editProfile };
+const deleteAccount = async () => {
+    await axiosInstance.delete('/auth/me');
+};
+
+const editCategory = async (body: Category): Promise<ResponseProfile> => {
+    const { data } = await axiosInstance.patch('/auth/category', body);
+
+    return data;
+};
+
+export { postSignup, postLogin, getProfile, getAccessToken, logout, kakaoLogin, editProfile, deleteAccount, editCategory };
 export type { RequestUser, ResponseToken, ResponseProfile, RequestProfile };

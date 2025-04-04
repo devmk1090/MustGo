@@ -1,20 +1,18 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { colors, feedNavigations, settingNavigations } from '@/constants';
-import FeedHomeScreen from '@/screens/feed/FeedHomeScreen';
-import FeedHomeHeaderLeft from '@/components/feed/FeedHomeHeaderLeft';
-import FeedDetailScreen from '@/screens/feed/FeedDetailScreen';
-import { LatLng } from 'react-native-maps';
-import EditPostScreen from '@/screens/feed/EditPostScreen';
-import ImageZoomScreen from '@/screens/feed/ImageZoomScreen';
+import { colors, settingNavigations } from '@/constants';
 import SettingHomeScreen from '@/screens/setting/SettingHomeScreen';
 import EditProfileScreen from '@/screens/setting/EditProfileScreen';
 import SettingHeaderLeft from '@/components/setting/SettingHeaderLeft';
+import DeleteAccountScreen from '@/screens/setting/DeleteAccountScreen';
+import EditCategoryScreen from '@/screens/setting/EditCategoryScreen';
 
 export type SettingStackParamList = {
   [settingNavigations.SETTING_HOME]: undefined;
   [settingNavigations.EDIT_PROFILE]: undefined;
+  [settingNavigations.DELETE_ACCOUNT]: undefined;
+  [settingNavigations.EDIT_CATEGORY]: undefined;
 };
 
 const Stack = createStackNavigator<SettingStackParamList>();
@@ -48,6 +46,26 @@ function SettingStackNavigator() {
         component={EditProfileScreen}
         options={{
           headerTitle: '프로필 수정',
+          cardStyle: {
+            backgroundColor: colors.WHITE,
+          },
+        }}
+      />
+      <Stack.Screen
+        name={settingNavigations.DELETE_ACCOUNT}
+        component={DeleteAccountScreen}
+        options={{
+          headerTitle: '회원 탈퇴',
+          cardStyle: {
+            backgroundColor: colors.WHITE,
+          },
+        }}
+      />
+      <Stack.Screen
+        name={settingNavigations.EDIT_CATEGORY}
+        component={EditCategoryScreen}
+        options={{
+          headerTitle: '카테고리 수정',
           cardStyle: {
             backgroundColor: colors.WHITE,
           },

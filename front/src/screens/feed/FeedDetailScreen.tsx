@@ -16,7 +16,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 
 import { FeedStackParamList } from '@/navigations/stack/FeedStackNavigator';
 import useGetPost from '@/hooks/queries/useGetPost';
-import { colorHex, colors, feedNavigations, mainNavigations, mapNavigations } from '@/constants';
+import { colorHex, colors, feedNavigations, mainNavigations, mapNavigations, settingNavigations } from '@/constants';
 import { getDateLocaleFormat } from '@/utils';
 import PreviewImageList from '@/components/common/PreviewImageList';
 import CustomButton from '@/components/common/CustomButton';
@@ -29,6 +29,7 @@ import useModal from '@/hooks/useModal';
 import FeedDetailOption from '@/components/feed/FeedDetailOption';
 import useDetailStore from '@/store/useDetailPostStore';
 import useMutateFavoritePost from '@/hooks/queries/useMutateFavoritePost';
+import useAuth from '@/hooks/queries/useAuth';
 
 type FeedDetailScreenProps = CompositeScreenProps<
   StackScreenProps<FeedStackParamList, typeof feedNavigations.FEED_DETAIL>,
@@ -38,6 +39,8 @@ type FeedDetailScreenProps = CompositeScreenProps<
 function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
   const { id } = route.params;
   const { data: post, isPending, isError } = useGetPost(id);
+  const { getProfileQuery } = useAuth();
+  const { categories } = getProfileQuery.data || {};
   const favoriteMutation = useMutateFavoritePost();
   const insets = useSafeAreaInsets();
   const { setMoveLocation } = useLocationStore();
@@ -66,10 +69,18 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
     favoriteMutation.mutate(post.id);
   };
 
+  const handlePressCategory = () => {
+    navigation.navigate(mainNavigations.SETTING, {
+      screen: settingNavigations.EDIT_CATEGORY,
+      initial: false,
+    });
+  };
+
+
   return (
     <>
       <ScrollView
-        scrollIndicatorInsets={{ right: 1 }} //스크롤 오른쪽 고정(IOS에서 종종 왼쪽으로 가기 때문)
+        scrollIndicatorInsets={{ right: 1 }}
         style={
           insets.bottom
             ? [styles.container, { marginBottom: insets.bottom + 50 }]
@@ -83,7 +94,12 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
               color={colors.WHITE}
               onPress={() => navigation.goBack()}
             />
-            <Ionicons name="ellipsis-vertical" size={30} color={colors.WHITE} onPress={detailOption.show} />
+            <Ionicons
+              name="ellipsis-vertical"
+              size={30}
+              color={colors.WHITE}
+              onPress={detailOption.show}
+            />
           </View>
         </SafeAreaView>
 
@@ -93,8 +109,8 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
               style={styles.image}
               source={{
                 uri: `${Platform.OS === 'ios'
-                  ? 'http://localhost:3030/'
-                  : 'http://10.0.2.2:3030/'
+                    ? 'http://localhost:3030/'
+                    : 'http://10.0.2.2:3030/'
                   }${post.images[0].uri}`,
               }}
               resizeMode="cover"
@@ -109,7 +125,11 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
 
         <View style={styles.contentsContainer}>
           <View style={styles.addressContainer}>
-            <Octicons name="location" size={10} color={colors.GRAY_500} />
+            <Octicons
+              name="location"
+              size={10}
+              color={colors.GRAY_500}
+            />
             <Text
               style={styles.addressText}
               ellipsizeMode="tail"
@@ -140,6 +160,20 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
                     { backgroundColor: colorHex[post.color] },
                   ]}
                 />
+              </View>
+              <View style={styles.infoColumn}>
+                <Text style={styles.infoColumnKeyText}>카테고리</Text>
+                {categories?.[post.color] ? (
+                  <Text style={styles.infoColumnValueText}>
+                    {categories?.[post.color]}
+                  </Text>
+                ) : (
+                  <Pressable
+                    style={styles.emptyCategoryContainer}
+                    onPress={handlePressCategory}>
+                    <Text style={styles.infoColumnKeyText}>미설정</Text>
+                  </Pressable>
+                )}
               </View>
             </View>
           </View>
