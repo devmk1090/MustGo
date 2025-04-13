@@ -26,7 +26,7 @@ function useThemeStorage() {
             const systemMode = (await getEncryptStorage('themeSystem')) ?? 'false'
             const newMode = systemMode ? systemTheme: mode
             setTheme(newMode)
-            setSystem(systemMode)
+            setSystemTheme(systemMode)
         })
     }, [setTheme, setSystemTheme, systemTheme])
 
