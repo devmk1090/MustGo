@@ -2,6 +2,8 @@ import React, { ForwardedRef, forwardRef, ReactNode, useRef } from 'react';
 import { Dimensions, Pressable, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 import { colors } from '@/constants';
 import { mergeRefs } from '@/utils';
+import useThemeStorage from '@/hooks/useThemeStorage';
+import { ThemeMode } from '@/types/common';
 
 interface InputFieldProps extends TextInputProps {
     disabled?: boolean;
@@ -19,6 +21,9 @@ const InputField = forwardRef(({
     icon = null,
     ...props
 }: InputFieldProps, ref?: ForwardedRef<TextInput>,) => {
+    const { theme } = useThemeStorage()
+    const styles = styling(theme)
+
     const innerRef = useRef<TextInput | null>(null);
 
     const handlePressInput = () => {
@@ -38,7 +43,7 @@ const InputField = forwardRef(({
                     <TextInput
                         ref={ref ? mergeRefs(innerRef, ref) : innerRef}
                         editable={!disabled}
-                        placeholderTextColor={colors.GRAY_500}
+                        placeholderTextColor={colors[theme].GRAY_500}
                         style={styles.input}
                         autoCapitalize='none' //첫글자 대문자 off
                         spellCheck={false} //교정 off
@@ -52,10 +57,11 @@ const InputField = forwardRef(({
     );
 });
 
-const styles = StyleSheet.create({
+const styling = (theme: ThemeMode) =>
+    StyleSheet.create({
     container: {
         borderWidth: 1,
-        borderColor: colors.GRAY_200,
+        borderColor: colors[theme].GRAY_200,
         padding: deviceHeight > 700 ? 15 : 10,
     },
     multiLine: {
@@ -63,7 +69,7 @@ const styles = StyleSheet.create({
       },
     input: {
         fontSize: 16,
-        color: colors.BLACK,
+        color: colors[theme].BLACK,
         padding: 0,
     },
     innerContainer: {
@@ -72,15 +78,15 @@ const styles = StyleSheet.create({
         gap: 5,
       },
     disabled: {
-        backgroundColor: colors.GRAY_200,
-        color: colors.GRAY_700,
+        backgroundColor: colors[theme].GRAY_200,
+        color: colors[theme].GRAY_700,
     },
     inputError: {
         borderWidth: 1,
-        borderColor: colors.RED_300,
+        borderColor: colors[theme].RED_300,
     },
     error: {
-        color: colors.RED_500,
+        color: colors[theme].RED_500,
         fontSize: 12,
         paddingTop: 5,
     },
