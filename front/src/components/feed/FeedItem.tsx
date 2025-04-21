@@ -14,6 +14,8 @@ import {getDateWithSeparator} from '@/utils';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FeedStackParamList } from '@/navigations/stack/FeedStackNavigator';
+import useThemeStorage from '@/hooks/useThemeStorage';
+import { ThemeMode } from '@/types';
 
 interface FeedItemProps {
   post: ResponsePost;
@@ -22,6 +24,9 @@ interface FeedItemProps {
 type Navigation = StackNavigationProp<FeedStackParamList>;
 
 function FeedItem({post}: FeedItemProps) {
+  const { theme } = useThemeStorage()
+  const styles = styling(theme)
+  
   const navigation = useNavigation<Navigation>();
 
   const handlePressFeed = () => {
@@ -66,7 +71,8 @@ function FeedItem({post}: FeedItemProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const styling = (theme: ThemeMode) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     margin: 5,
@@ -84,7 +90,7 @@ const styles = StyleSheet.create({
   emptyImageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: colors.GRAY_200,
+    borderColor: colors[theme].GRAY_200,
     borderRadius: 5,
     borderWidth: 1,
   },
@@ -93,17 +99,17 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   dateText: {
-    color: colors.PINK_700,
+    color: colors[theme].PINK_700,
     fontWeight: '600',
     fontSize: 12,
   },
   titleText: {
-    color: colors.BLACK,
+    color: colors[theme].BLACK,
     fontWeight: '500',
     fontSize: 13,
   },
   descriptionText: {
-    color: colors.GRAY_500,
+    color: colors[theme].GRAY_500,
     fontSize: 13,
   },
 });

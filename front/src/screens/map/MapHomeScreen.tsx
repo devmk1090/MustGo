@@ -14,13 +14,15 @@ import { MainDrawerParamList } from '@/navigations/drawer/MainDrawerNavigator';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import useUserLocation from '@/hooks/useUserLocation';
 import usePermission from '@/hooks/usePermission';
-import mapStyle from '@/style/mapStyle';
 import CustomMarker from '@/components/common/CustomMarker';
 import useGetMarkers from '@/hooks/queries/useGetMarkers';
 import MarkerModal from '@/components/map/MarkerModal';
 import useModal from '@/hooks/useModal';
 import useMoveMapView from '@/hooks/useMoveMapView';
 import useLocationStore from '@/store/useLocationStore';
+import useThemeStorage from '@/hooks/useThemeStorage';
+import { ThemeMode } from '@/types';
+import getMapStyle from '@/style/mapStyle';
 
 type Navigation = CompositeNavigationProp<
     StackNavigationProp<MapStackParamList>,
@@ -28,6 +30,8 @@ type Navigation = CompositeNavigationProp<
 >;
 
 function MapHomeScreen() {
+    const { theme } = useThemeStorage()
+    const styles = styling(theme)
     const inset = useSafeAreaInsets();
     const navigation = useNavigation<Navigation>();
     const { userLocation, isUserLocationError } = useUserLocation();
@@ -89,7 +93,7 @@ function MapHomeScreen() {
                 showsUserLocation
                 followsUserLocation
                 showsMyLocationButton={false}
-                customMapStyle={mapStyle}
+                customMapStyle={getMapStyle(theme)}
                 onLongPress={handleLongPressMapView}
                 onRegionChangeComplete={handleChangeDelta}
                 region={{
@@ -114,17 +118,17 @@ function MapHomeScreen() {
             <Pressable
                 style={[styles.drawerButton, { top: inset.top || 20 }]}
                 onPress={() => navigation.openDrawer()}>
-                <Ionicons name="menu" color={colors.WHITE} size={25} />
+                <Ionicons name="menu" color={colors[theme].WHITE} size={25} />
             </Pressable>
             <View style={styles.buttonList}>
                 <Pressable style={styles.mapButton} onPress={handlePressAddPost}>
-                    <MaterialIcons name="add" color={colors.WHITE} size={25} />
+                    <MaterialIcons name="add" color={colors[theme].WHITE} size={25} />
                 </Pressable>
                 <Pressable style={styles.mapButton} onPress={handlePressSearch}>
-                    <Ionicons name="search" color={colors.WHITE} size={25} />
+                    <Ionicons name="search" color={colors[theme].WHITE} size={25} />
                 </Pressable>
                 <Pressable style={styles.mapButton} onPress={handlePressUserLocation}>
-                    <MaterialIcons name="my-location" color={colors.WHITE} size={25} />
+                    <MaterialIcons name="my-location" color={colors[theme].WHITE} size={25} />
                 </Pressable>
             </View>
 
@@ -137,42 +141,43 @@ function MapHomeScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    drawerButton: {
-        position: 'absolute',
-        left: 0,
-        paddingVertical: 10,
-        paddingHorizontal: 12,
-        backgroundColor: colors.PINK_700,
-        borderTopRightRadius: 50,
-        borderBottomRightRadius: 50,
-        shadowColor: colors.BLACK,
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.5,
-        elevation: 4,
-    },
-    buttonList: {
-        position: 'absolute',
-        bottom: 30,
-        right: 15,
-    },
-    mapButton: {
-        backgroundColor: colors.PINK_700,
-        marginVertical: 5,
-        height: 48,
-        width: 48,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 30,
-        shadowColor: colors.BLACK,
-        shadowOffset: { width: 1, height: 2 },
-        shadowOpacity: 0.5,
-        elevation: 2,
-    },
-});
+const styling = (theme: ThemeMode) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+        },
+        drawerButton: {
+            position: 'absolute',
+            left: 0,
+            paddingVertical: 10,
+            paddingHorizontal: 12,
+            backgroundColor: colors[theme].PINK_700,
+            borderTopRightRadius: 50,
+            borderBottomRightRadius: 50,
+            shadowColor: colors[theme].UNCHANGE_BLACK,
+            shadowOffset: { width: 1, height: 1 },
+            shadowOpacity: 0.5,
+            elevation: 4,
+        },
+        buttonList: {
+            position: 'absolute',
+            bottom: 30,
+            right: 15,
+        },
+        mapButton: {
+            backgroundColor: colors[theme].PINK_700,
+            marginVertical: 5,
+            height: 48,
+            width: 48,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 30,
+            shadowColor: colors[theme].BLACK,
+            shadowOffset: { width: 1, height: 2 },
+            shadowOpacity: 0.5,
+            elevation: 2,
+        },
+    });
 
 
 export default MapHomeScreen;

@@ -15,7 +15,8 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Octicons from 'react-native-vector-icons/Octicons';
 
 import {colors} from '@/constants';
-import type {ImageUri} from '@/types';
+import type {ImageUri, ThemeMode} from '@/types';
+import useThemeStorage from '@/hooks/useThemeStorage';
 
 interface ImageCarouselProps {
   images: ImageUri[];
@@ -25,6 +26,9 @@ interface ImageCarouselProps {
 const deviceWidth = Dimensions.get('window').width;
 
 function ImageCarousel({images, pressedIndex = 0}: ImageCarouselProps) {
+  const { theme } = useThemeStorage()
+  const styles = styling(theme)
+
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [page, setPage] = useState(pressedIndex);
@@ -42,7 +46,7 @@ function ImageCarousel({images, pressedIndex = 0}: ImageCarouselProps) {
       <Pressable
         style={[styles.backButton, {marginTop: insets.top + 10}]}
         onPress={() => navigation.goBack()}>
-        <Octicons name="arrow-left" size={30} color={colors.WHITE} />
+        <Octicons name="arrow-left" size={30} color={colors[theme].WHITE} />
       </Pressable>
 
       <FlatList
@@ -91,17 +95,18 @@ function ImageCarousel({images, pressedIndex = 0}: ImageCarouselProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const styling = (theme: ThemeMode) =>
+    StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: colors.WHITE,
+    backgroundColor: colors[theme].WHITE,
   },
   backButton: {
     position: 'absolute',
     left: 20,
     zIndex: 1,
-    backgroundColor: colors.PINK_700,
+    backgroundColor: colors[theme].PINK_700,
     height: 40,
     width: 40,
     borderRadius: 40,
@@ -119,13 +124,13 @@ const styles = StyleSheet.create({
   },
   pageDot: {
     margin: 4,
-    backgroundColor: colors.GRAY_200,
+    backgroundColor: colors[theme].GRAY_200,
     width: 8,
     height: 8,
     borderRadius: 4,
   },
   currentPageDot: {
-    backgroundColor: colors.PINK_700,
+    backgroundColor: colors[theme].PINK_700,
   },
 });
 

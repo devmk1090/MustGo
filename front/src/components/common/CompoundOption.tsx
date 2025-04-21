@@ -10,7 +10,10 @@ import {
   Text,
   View,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {colors} from '@/constants';
+import useThemeStorage from '@/hooks/useThemeStorage';
+import { ThemeMode } from '@/types';
 
 interface OptionContextValue {
   onClickOutSide?: (event: GestureResponderEvent) => void;
@@ -54,6 +57,9 @@ function OptionMain({
 
 //컴포넌트 사이에서 어떤 함수를 공유하려면 Context API 이용
 function Background({children}: PropsWithChildren) {
+  const {theme} = useThemeStorage();
+  const styles = styling(theme);
+
   const optionContext = useContext(OptionContext);
 
   return (
@@ -66,15 +72,22 @@ function Background({children}: PropsWithChildren) {
 }
 
 function Container({children}: PropsWithChildren) {
+  const {theme} = useThemeStorage();
+  const styles = styling(theme);
+
   return <View style={styles.optionContainer}>{children}</View>;
 }
 
 interface ButtonProps extends PressableProps {
   children: ReactNode;
   isDanger?: boolean;
+  isChecked?: boolean;
 }
 
-function Button({children, isDanger = false, ...props}: ButtonProps) {
+function Button({children, isDanger = false, isChecked = false, ...props}: ButtonProps) {
+  const { theme } = useThemeStorage()
+  const styles = styling(theme)
+
   return (
     <Pressable
       style={({pressed}) => [
@@ -85,11 +98,15 @@ function Button({children, isDanger = false, ...props}: ButtonProps) {
       <Text style={[styles.optionText, isDanger && styles.dangerText]}>
         {children}
       </Text>
+      {isChecked && <Ionicons name={'checkmark'} color={colors[theme].BLUE_500} size={20} />}
     </Pressable>
   );
 }
 
 function Title({children}: PropsWithChildren) {
+  const { theme } = useThemeStorage()
+  const styles = styling(theme)
+
   return (
     <View style={styles.titleContainer}>
       <Text style={styles.titleText}>{children}</Text>
@@ -98,6 +115,9 @@ function Title({children}: PropsWithChildren) {
 }
 
 function Divider() {
+  const { theme } = useThemeStorage()
+  const styles = styling(theme)
+
   return <View style={styles.border} />;
 }
 
@@ -110,17 +130,18 @@ export const CompoundOption = Object.assign(OptionMain, {
   Divider,
 });
 
-const styles = StyleSheet.create({
-  optionBackground: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0 0 0 / 0.5)',
+const styling = (theme: ThemeMode) =>
+  StyleSheet.create({
+    optionBackground: {
+      flex: 1,
+      justifyContent: 'flex-end',
+      backgroundColor: 'rgba(0 0 0 / 0.5)',
   },
   optionContainer: {
     borderRadius: 15,
     marginHorizontal: 10,
     marginBottom: 10,
-    backgroundColor: colors.GRAY_100,
+    backgroundColor: colors[theme].GRAY_100,
     overflow: 'hidden',
   },
   optionButton: {
@@ -131,15 +152,15 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   optionButtonPressed: {
-    backgroundColor: colors.GRAY_200,
+    backgroundColor: colors[theme].GRAY_200,
   },
   optionText: {
     fontSize: 17,
-    color: colors.BLUE_500,
+    color: colors[theme].BLUE_500,
     fontWeight: '500',
   },
   dangerText: {
-    color: colors.RED_500,
+    color: colors[theme].RED_500,
   },
   titleContainer: {
     alignItems: 'center',
@@ -148,10 +169,10 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 16,
     fontWeight: '500',
-    color: colors.BLACK,
+    color: colors[theme].BLACK,
   },
   border: {
-    borderBottomColor: colors.GRAY_200,
+    borderBottomColor: colors[theme].GRAY_200,
     borderBottomWidth: 1,
   },
 });

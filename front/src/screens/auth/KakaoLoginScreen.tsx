@@ -1,5 +1,7 @@
 import { colors } from '@/constants';
 import useAuth from '@/hooks/queries/useAuth';
+import useThemeStorage from '@/hooks/useThemeStorage';
+import { ThemeMode } from '@/types';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { ActivityIndicator, Dimensions, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
@@ -12,6 +14,9 @@ const REDIRECT_URI = `${Platform.OS === 'android'
 const INJECTED_JAVASCRIPT = "window.ReactNativeWebView.postMessage('')";
 
 function KakaoLoginScreen() {
+  const { theme } = useThemeStorage()
+  const styles = styling(theme)
+
   const { kakaoLoginMutation } = useAuth();
   const [isChangeNavigate, setIsChangeNavigate] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +56,7 @@ function KakaoLoginScreen() {
     <SafeAreaView style={styles.container}>
       {(isChangeNavigate || isLoading) && (
         <View style={styles.kakaoLoadingContainer}>
-          <ActivityIndicator size={'small'} color={colors.BLACK} />
+          <ActivityIndicator size={'small'} color={colors[theme].BLACK} />
         </View>
       )}
       <WebView
@@ -67,12 +72,13 @@ function KakaoLoginScreen() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  kakaoLoadingContainer: {
-    backgroundColor: colors.WHITE,
+const styling = (theme: ThemeMode) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    kakaoLoadingContainer: {
+      backgroundColor: colors[theme].WHITE,
     height: Dimensions.get('window').height,
     paddingBottom: 100,
     alignItems: 'center',

@@ -30,13 +30,17 @@ import FeedDetailOption from '@/components/feed/FeedDetailOption';
 import useDetailStore from '@/store/useDetailPostStore';
 import useMutateFavoritePost from '@/hooks/queries/useMutateFavoritePost';
 import useAuth from '@/hooks/queries/useAuth';
-
+import useThemeStorage from '@/hooks/useThemeStorage';
+import { ThemeMode } from '@/types';
 type FeedDetailScreenProps = CompositeScreenProps<
   StackScreenProps<FeedStackParamList, typeof feedNavigations.FEED_DETAIL>,
   DrawerScreenProps<MainDrawerParamList>
 >;
 
 function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
+  const { theme } = useThemeStorage()
+  const styles = styling(theme)
+
   const { id } = route.params;
   const { data: post, isPending, isError } = useGetPost(id);
   const { getProfileQuery } = useAuth();
@@ -91,13 +95,13 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
             <Octicons
               name="arrow-left"
               size={30}
-              color={colors.WHITE}
+              color={colors[theme].WHITE}
               onPress={() => navigation.goBack()}
             />
             <Ionicons
               name="ellipsis-vertical"
               size={30}
-              color={colors.WHITE}
+              color={colors[theme].WHITE}
               onPress={detailOption.show}
             />
           </View>
@@ -128,7 +132,7 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
             <Octicons
               name="location"
               size={10}
-              color={colors.GRAY_500}
+              color={colors[theme].GRAY_500}
             />
             <Text
               style={styles.addressText}
@@ -202,7 +206,7 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
             <Octicons
               name="star-fill"
               size={30}
-              color={post.isFavorite ? colors.YELLOW_500 : colors.GRAY_100}
+              color={post.isFavorite ? colors[theme].YELLOW_500 : colors[theme].GRAY_100}
             />
           </Pressable>
           <CustomButton
@@ -222,10 +226,11 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
+const styling = (theme: ThemeMode) =>
+  StyleSheet.create({
+    container: {
+      position: 'relative',
+    },
   scrollNoInsets: {
     marginBottom: 65,
   },
@@ -253,20 +258,20 @@ const styles = StyleSheet.create({
     height: Dimensions.get('screen').width,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.GRAY_200,
-    borderColor: colors.GRAY_200,
+    backgroundColor: colors[theme].GRAY_200,
+    borderColor: colors[theme].GRAY_200,
     borderWidth: 1,
   },
   contentsContainer: {
     paddingVertical: 20,
     paddingHorizontal: 20,
-    backgroundColor: colors.WHITE,
+    backgroundColor: colors[theme].WHITE,
     marginBottom: 10,
   },
   titleText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: colors.BLACK,
+    color: colors[theme].BLACK,
   },
   infoContainer: {
     marginVertical: 20,
@@ -282,10 +287,10 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   infoColumnKeyText: {
-    color: colors.BLACK,
+    color: colors[theme].BLACK,
   },
   infoColumnValueText: {
-    color: colors.PINK_700,
+    color: colors[theme].PINK_700,
   },
   markerColor: {
     width: 10,
@@ -295,7 +300,7 @@ const styles = StyleSheet.create({
   emptyCategoryContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.GRAY_300,
+    backgroundColor: colors[theme].GRAY_300,
     padding: 2,
     borderRadius: 2,
   },
@@ -306,17 +311,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addressText: {
-    color: colors.GRAY_500,
+    color: colors[theme].GRAY_500,
     fontSize: 12,
   },
   descriptionText: {
-    color: colors.BLACK,
+    color: colors[theme].BLACK,
     lineHeight: 25,
     fontSize: 16,
   },
   imageContentsContainer: {
     paddingVertical: 15,
-    backgroundColor: colors.WHITE,
+    backgroundColor: colors[theme].WHITE,
     marginBottom: 10,
   },
   bottomContainer: {
@@ -326,9 +331,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingTop: 10,
     paddingHorizontal: 10,
-    backgroundColor: colors.WHITE,
+    backgroundColor: colors[theme].WHITE,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.GRAY_200,
+    borderColor: colors[theme].GRAY_200,
   },
   tabContainer: {
     flexDirection: 'row',
@@ -339,7 +344,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   bookmarkContainer: {
-    backgroundColor: colors.PINK_700,
+    backgroundColor: colors[theme].PINK_700,
     height: '100%',
     paddingHorizontal: 5,
     justifyContent: 'center',

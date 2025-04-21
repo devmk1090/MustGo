@@ -9,10 +9,11 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { ImageUri } from '@/types';
+import { ImageUri, ThemeMode } from '@/types';
 import { colors, feedNavigations } from '@/constants';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { FeedStackParamList } from '@/navigations/stack/FeedStackNavigator';
+import useThemeStorage from '@/hooks/useThemeStorage';
 
 interface PreviewImageListProps {
   imageUris: ImageUri[];
@@ -29,6 +30,8 @@ function PreviewImageList({
   showOption = false,
   zoomEnable = false,
 }: PreviewImageListProps) {
+  const { theme } = useThemeStorage()
+  const styles = styling(theme)
 
   const navigation = useNavigation<NavigationProp<FeedStackParamList>>()
   const handlePressImage = (index: number) => {
@@ -62,7 +65,7 @@ function PreviewImageList({
                     <Pressable
                       style={[styles.imageButton, styles.deleteButton]}
                       onPress={() => onDelete && onDelete(uri)}>
-                      <Ionicons name={'close'} size={16} color={colors.WHITE} />
+                      <Ionicons name={'close'} size={16} color={colors[theme].WHITE} />
                     </Pressable>
 
                     {index > 0 && (
@@ -74,7 +77,7 @@ function PreviewImageList({
                         <Ionicons
                           name={'arrow-back-outline'}
                           size={16}
-                          color={colors.WHITE}
+                          color={colors[theme].WHITE}
                         />
                       </Pressable>
                     )}
@@ -87,7 +90,7 @@ function PreviewImageList({
                         <Ionicons
                           name={'arrow-forward-outline'}
                           size={16}
-                          color={colors.WHITE}
+                          color={colors[theme].WHITE}
                         />
                       </Pressable>
                     )}
@@ -102,7 +105,8 @@ function PreviewImageList({
   );
 }
 
-const styles = StyleSheet.create({
+const styling = (theme: ThemeMode) =>
+    StyleSheet.create({
   container: {
     flexDirection: 'row',
     paddingHorizontal: 15,
@@ -118,7 +122,7 @@ const styles = StyleSheet.create({
   },
   imageButton: {
     position: 'absolute',
-    backgroundColor: colors.BLACK,
+    backgroundColor: colors[theme].BLACK,
     zIndex: 1,
   },
   deleteButton: {

@@ -11,6 +11,8 @@ import YearSelector from './YearSelector';
 import useModal from '@/hooks/useModal';
 import { useNavigation } from '@react-navigation/native';
 import CalendarHomeHeaderRight from './CalendarHomeHeaderRight';
+import useThemeStorage from '@/hooks/useThemeStorage';
+import { ThemeMode } from '@/types/common';
 
 interface CalendarProps<T> {
   monthYear: MonthYear;
@@ -29,6 +31,9 @@ function Calendar<T>({
   onChangeMonth,
   moveToToday,
 }: CalendarProps<T>) {
+  const { theme } = useThemeStorage()
+  const styles = styling(theme)
+
   const { month, year, lastDate, firstDOW } = monthYear;
   const navigation = useNavigation();
   const yearSelector = useModal();
@@ -50,7 +55,7 @@ function Calendar<T>({
         <Pressable
           onPress={() => onChangeMonth(-1)}
           style={styles.monthButtonContainer}>
-          <Ionicons name="arrow-back" size={25} color={colors.BLACK} />
+          <Ionicons name="arrow-back" size={25} color={colors[theme].BLACK} />
         </Pressable>
         <Pressable style={styles.monthYearContainer}>
           <Text style={styles.titleText}>
@@ -59,13 +64,13 @@ function Calendar<T>({
           <MaterialIcons
             name="keyboard-arrow-down"
             size={20}
-            color={colors.GRAY_500}
+            color={colors[theme].GRAY_500}
           />
         </Pressable>
         <Pressable
           onPress={() => onChangeMonth(1)}
           style={styles.monthButtonContainer}>
-          <Ionicons name="arrow-forward" size={25} color={colors.BLACK} />
+          <Ionicons name="arrow-forward" size={25} color={colors[theme].BLACK} />
         </Pressable>
       </View>
 
@@ -100,7 +105,8 @@ function Calendar<T>({
   );
 }
 
-const styles = StyleSheet.create({
+const styling = (theme: ThemeMode) =>
+    StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -119,12 +125,12 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 18,
     fontWeight: '500',
-    color: colors.BLACK,
+    color: colors[theme].BLACK,
   },
   bodyContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.GRAY_300,
-    backgroundColor: colors.GRAY_100,
+    borderBottomColor: colors[theme].GRAY_300,
+    backgroundColor: colors[theme].GRAY_100,
   },
 });
 
