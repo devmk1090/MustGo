@@ -9,6 +9,7 @@ import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import Octicons from 'react-native-vector-icons/Octicons';
 import DarkModeOption from './DarkModeOption';
 import useThemeStorage from '@/hooks/useThemeStorage';
+import MapLegendOption from './MapLegendOption';
 type SettingHomeScreenProps = StackScreenProps<SettingStackParamList>;
 
 const SettingHomeScreen = ({ navigation }: SettingHomeScreenProps) => {
@@ -16,6 +17,7 @@ const SettingHomeScreen = ({ navigation }: SettingHomeScreenProps) => {
 
     const { logoutMutation } = useAuth();
     const darkModeOption = useModal();
+    const mapLegentOption = useModal();
 
     const handlePressEditProfile = () => {
         navigation.navigate(settingNavigations.EDIT_PROFILE);
@@ -36,6 +38,7 @@ const SettingHomeScreen = ({ navigation }: SettingHomeScreenProps) => {
         <SettingItem title="프로필 수정" onPress={handlePressEditProfile} />
         <SettingItem title="마커 카테고리 설정" onPress={handlePressEditCategory} />
         <SettingItem title="다크 모드" onPress={darkModeOption.show} />
+        <SettingItem title="범례 표시" onPress={mapLegentOption.show} />
 
         <View style={styles.space} />
         <SettingItem
@@ -45,6 +48,7 @@ const SettingHomeScreen = ({ navigation }: SettingHomeScreenProps) => {
           icon={<Octicons name={'sign-out'} color={colors[theme].RED_500} size={16} />}
         />
         <DarkModeOption isVisible={darkModeOption.isVisible} hideOption={darkModeOption.hide} />
+        <MapLegendOption isVisible={mapLegentOption.isVisible} hideOption={mapLegentOption.hide} />
       </ScrollView>
     </SafeAreaView>
   );
