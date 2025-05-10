@@ -11,6 +11,7 @@ import { Category, Profile } from "@/types";
 function useSignup(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: postSignup,
+    throwOnError: error => Number(error.response?.status) >= 500,
     ...mutationOptions
   });
 }
