@@ -10,7 +10,9 @@ function RootNavigator() {
 
     useEffect(() => {
         if (!isLoginLoading) {
-            SplashScreen.hide()
+            setTimeout(() => {
+                SplashScreen.hide()
+            }, 500);
         }
     }, [isLoginLoading]);
 
