@@ -47,7 +47,7 @@ function useKakaoLogin(mutationOptions?: UseMutationCustomOptions) {
 }
 
 function useGetRefreshToken() {
-  const { isSuccess, data, isError } = useQuery({ //5버전 부터는 객체를 만들어서 반환받는 값을 이용해서 처리
+  const { isSuccess, data, isError, isPending } = useQuery({ //5버전 부터는 객체를 만들어서 반환받는 값을 이용해서 처리
     queryKey: [queryKeys.AUTH, queryKeys.GET_ACCESS_TOKEN],
     queryFn: getAccessToken,
     staleTime: numbers.ACCESS_TOKEN_REFRESH_TIME,
@@ -70,7 +70,7 @@ function useGetRefreshToken() {
     }
   }, [isError]);
 
-  return { isSuccess, isError };
+  return { isSuccess, isError, isPending };
 }
 
 type ResponseSelectProfile = {categories: Category} & Profile;
@@ -154,6 +154,7 @@ function useAuth() {
     onSuccess: () => logoutMutation.mutate(null)
   });
   const categoryMutation = useMutateCategory();
+  const isLoginLoading = refreshTokenQuery.isPending
 
   return {
     signupMutation,
@@ -165,6 +166,7 @@ function useAuth() {
     profileMutation,
     deleteAccountMutation,
     categoryMutation,
+    isLoginLoading,
   };
 }
 
