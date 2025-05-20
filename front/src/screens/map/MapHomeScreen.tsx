@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
-import MapView, { Callout, LatLng, LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { Callout, LatLng, LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { alerts, colors, mapNavigations, numbers } from '@/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Toast from 'react-native-toast-message';
+import MapView from "react-native-map-clustering";
 
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -99,6 +100,7 @@ function MapHomeScreen() {
                 customMapStyle={getMapStyle(theme)}
                 onLongPress={handleLongPressMapView}
                 onRegionChangeComplete={handleChangeDelta}
+                clusterColor={colors[theme].PINK_700}
                 region={{
                     ...userLocation,
                     ...numbers.INITIAL_DELTA
