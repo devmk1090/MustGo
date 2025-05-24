@@ -1,14 +1,13 @@
 import React from 'react';
 import {
-  Image,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
 import { ImageUri, ThemeMode } from '@/types';
 import { colors, feedNavigations } from '@/constants';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -49,7 +48,7 @@ function PreviewImageList({
           return (
             <View key={uri} style={styles.imageContainer}>
               <Pressable onPress={() => handlePressImage(index)}>
-                <Image
+                <FastImage
                   style={styles.image}
                   source={{
                     uri: `${Platform.OS === 'ios'
@@ -57,7 +56,7 @@ function PreviewImageList({
                       : 'http://10.0.2.2:3030/'
                       }${uri}`,
                   }}
-                  resizeMode="cover"
+                  resizeMode={FastImage.resizeMode.cover}
                 />
 
                 {showOption && (

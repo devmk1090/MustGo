@@ -1,7 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  Image,
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,

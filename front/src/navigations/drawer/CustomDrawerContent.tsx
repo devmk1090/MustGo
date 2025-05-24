@@ -1,6 +1,7 @@
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
-import { Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FastImage from 'react-native-fast-image';
 
 import useAuth from "@/hooks/queries/useAuth";
 import { colors, mainNavigations, settingNavigations } from '@/constants';
@@ -28,13 +29,14 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         <View style={styles.userInfoContainer}>
           <Pressable style={styles.userImageContainer}>
             {imageUri === null && kakaoImageUri === null && (
-              <Image
+              <FastImage
                 source={require('@/assets/user-default.png')}
                 style={styles.userImage}
+                resizeMode={FastImage.resizeMode.cover}
               />
             )}
             {imageUri === null && !!kakaoImageUri && (
-              <Image
+              <FastImage
                 source={{
                   uri: `${Platform.OS === 'ios'
                       ? 'http://localhost:3030/'
@@ -45,7 +47,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
               />
             )}
             {imageUri !== null && (
-              <Image
+              <FastImage
                 source={{
                   uri: `${Platform.OS === 'ios'
                       ? 'http://localhost:3030/'

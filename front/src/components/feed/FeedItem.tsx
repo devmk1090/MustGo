@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   Dimensions,
-  Image,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {ResponsePost} from '@/api';
 import {colors, feedNavigations} from '@/constants';
 import {getDateWithSeparator} from '@/utils';
@@ -38,7 +38,7 @@ function FeedItem({post}: FeedItemProps) {
       <View>
         {post.images.length > 0 && (
           <View key={post.id} style={styles.imageContainer}>
-            <Image
+            <FastImage
               style={styles.image}
               source={{
                 uri: `${
@@ -47,7 +47,7 @@ function FeedItem({post}: FeedItemProps) {
                     : 'http://10.0.2.2:3030/'
                 }${post.images[0]?.uri}`,
               }}
-              resizeMode="cover"
+              resizeMode={FastImage.resizeMode.cover}
             />
           </View>
         )}

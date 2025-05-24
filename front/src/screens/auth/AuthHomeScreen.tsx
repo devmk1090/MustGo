@@ -3,6 +3,7 @@ import React from 'react';
 import { Dimensions, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FastImage from 'react-native-fast-image';
 
 import { AuthStackParamList } from '@/navigations/stack/AuthStackNavigator';
 import CustomButton from '@/components/common/CustomButton';
@@ -22,10 +23,10 @@ function AuthHomeScreen({ navigation }: AuthHomeScrrenProps) {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.imageContainer}>
-                <Image
-                    resizeMode='contain'
+                <FastImage
                     style={styles.image}
                     source={require('../../assets/gradle-logo.png')}
+                    resizeMode={FastImage.resizeMode.contain}
                 />
 
             </View>
