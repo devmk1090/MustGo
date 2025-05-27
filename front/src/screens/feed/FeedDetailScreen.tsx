@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import {
   Dimensions,
-  Image,
   Platform,
   Pressable,
   SafeAreaView,
@@ -13,7 +12,7 @@ import {
 import Octicons from 'react-native-vector-icons/Octicons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { StackScreenProps } from '@react-navigation/stack';
-
+import FastImage from 'react-native-fast-image';
 import { FeedStackParamList } from '@/navigations/stack/FeedStackNavigator';
 import useGetPost from '@/hooks/queries/useGetPost';
 import { colorHex, colors, feedNavigations, mainNavigations, mapNavigations, settingNavigations } from '@/constants';
@@ -109,7 +108,7 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
 
         <View style={styles.imageContainer}>
           {post.images.length > 0 && (
-            <Image
+            <FastImage
               style={styles.image}
               source={{
                 uri: `${Platform.OS === 'ios'
@@ -117,7 +116,7 @@ function FeedDetailScreen({ route, navigation }: FeedDetailScreenProps) {
                     : 'http://10.0.2.2:3030/'
                   }${post.images[0].uri}`,
               }}
-              resizeMode="cover"
+              resizeMode={FastImage.resizeMode.cover}
             />
           )}
           {post.images.length === 0 && (
