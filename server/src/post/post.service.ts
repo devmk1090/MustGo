@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Post } from './post.entity';
 import { Repository } from 'typeorm';
@@ -24,6 +24,27 @@ export class PostService {
             .skip(offset)
             .take(perPage)
             .getMany();
+    }
+
+    async getPostById(id: number) {
+        try {
+            const foundPost = await this.postRepository
+                .createQueryBuilder('post')
+                .where('post.id = :id', { id })
+                .getOne();
+
+            if (!foundPost) {
+                throw new NotFoundException('존재하지 않는 피드입니다');
+            }
+            
+            return foundPost
+
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException(
+                '장소를 가져오는 도중 에러가 발생했습니다'
+            )
+        }
     }
 
     async createPost(createPostDto: CreatePostDto) {
