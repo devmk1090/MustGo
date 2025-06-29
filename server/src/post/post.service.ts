@@ -105,5 +105,34 @@ export class PostService {
         }
     }
 
+    async updatePost(id: number, updatePostDto: Omit<CreatePostDto, 'latitude' | 'longitude' | 'address'>) {
 
+        const post = await this.getPostById(id)
+        const {
+            title,
+            description,
+            color,
+            date,
+            score,
+            imageUris,
+        } = updatePostDto
+        post.title = title
+        post.description = description
+        post.color = color
+        post.date = date
+        post.score = score
+
+        //  TODO: image module
+
+        try {
+            await this.postRepository.save(post)
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException(
+                '장소를 수정하는 도중 에러가 발생했습니다.'
+            )
+        }
+        
+        return post
+    }
 }
