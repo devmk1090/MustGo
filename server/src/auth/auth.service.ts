@@ -67,4 +67,9 @@ export class AuthService {
 
         return { accessToken, refreshToken };
     }
+
+    async refreshToken(user: User) {
+        console.log(user);
+        const { email } = user;
+    }
 }
