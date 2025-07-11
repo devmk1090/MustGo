@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -64,12 +64,34 @@ export class AuthService {
         }
 
         const { accessToken, refreshToken } = await this.getTokens({ email });
+        await this.updateHashedRefreshToken(user.id, refreshToken);
 
         return { accessToken, refreshToken };
+    }
+
+    private async updateHashedRefreshToken(id: number, refreshToken: string) {
+        const salt = await bcrypt.genSalt();
+        const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
+
+        try {
+            await this.userRepository.update(id, { hashedRefreshToken });
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException();
+        }
     }
 
     async refreshToken(user: User) {
         console.log(user);
         const { email } = user;
+        const { accessToken, refreshToken } = await this.getTokens({ email });
+
+        if (!user.hashedRefreshToken) {
+            throw new ForbiddenException();
+        }
+
+        await this.updateHashedRefreshToken(user.id, refreshToken);
+
+        return { accessToken, refreshToken };
     }
 }
