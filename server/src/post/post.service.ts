@@ -3,6 +3,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { Post } from './post.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/user.entity';
 
 //각 컨트롤러의 메서드에 해당하는 db작업 로직이 들어감
 
@@ -13,10 +14,11 @@ export class PostService {
         private postRepository: Repository<Post>,
     ) { }
 
-    async getAllMarkers() {
+    async getAllMarkers(user: User) {
         try {
             const markers = await this.postRepository
                 .createQueryBuilder('post')
+                .where('post.userId = :userId', { userId: user.id })
                 .select([
                     'post.id',
                     'post.latitude',
@@ -36,23 +38,25 @@ export class PostService {
     }
 
     //페이지네이션 처리
-    async getPosts(page: number) {
+    async getPosts(page: number, user: User) {
         const perPage = 10
         const offset = (page - 1) * perPage;
 
         return this.postRepository
             .createQueryBuilder('post')
+            .where('post.userId = :userId', { userId: user.id })
             .orderBy('post.date', 'DESC')
             .skip(offset)
             .take(perPage)
             .getMany();
     }
 
-    async getPostById(id: number) {
+    async getPostById(id: number, user: User) {
         try {
             const foundPost = await this.postRepository
                 .createQueryBuilder('post')
-                .where('post.id = :id', { id })
+                .where('post.userId = :userId', { userId: user.id })
+                .andWhere('post.id = :id', { id })
                 .getOne();
 
             if (!foundPost) {
@@ -69,7 +73,7 @@ export class PostService {
         }
     }
 
-    async createPost(createPostDto: CreatePostDto) {
+    async createPost(createPostDto: CreatePostDto, user: User) {
         const {
             latitude,
             longitude,
@@ -91,6 +95,7 @@ export class PostService {
             description,
             date,
             score,
+            user,
         });
 
         //db에 저장
@@ -103,16 +108,19 @@ export class PostService {
             )
         }
 
-        return post;
+        const { user:_, ...postWithoutUser } = post; // user 제외하고 리턴
+
+        return postWithoutUser;
     }
 
-    async deletePost(id: number) {
+    async deletePost(id: number, user: User) {
         try {
             const result = await this.postRepository
                 .createQueryBuilder('post')
                 .delete()
                 .from(Post)
-                .where('id = :id', { id })
+                .where('userId = :userId', { userId: user.id })
+                .andWhere('post.id = :id', { id })
                 .execute();
 
             if (result.affected === 0) {
@@ -127,9 +135,9 @@ export class PostService {
         }
     }
 
-    async updatePost(id: number, updatePostDto: Omit<CreatePostDto, 'latitude' | 'longitude' | 'address'>) {
+    async updatePost(id: number, updatePostDto: Omit<CreatePostDto, 'latitude' | 'longitude' | 'address'>, user: User) {
 
-        const post = await this.getPostById(id)
+        const post = await this.getPostById(id, user)
         const {
             title,
             description,
