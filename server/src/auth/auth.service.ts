@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -6,6 +6,7 @@ import { AuthDto } from './dto/auth.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { EditProfileDto } from './dto/edit-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -93,5 +94,33 @@ export class AuthService {
         await this.updateHashedRefreshToken(user.id, refreshToken);
 
         return { accessToken, refreshToken };
+    }
+
+    getProfile(user: User) {
+        const { password, hashedRefreshToken, ...rest } = user;
+
+        return { ...rest }
+    }
+
+    async editProfile(editProfileDto: EditProfileDto, user: User) {
+        const profile = await this.userRepository
+            .createQueryBuilder('user')
+            .where('user.id = :userId', { userId: user.id })
+            .getOne();
+
+        if (!profile) {
+            throw new NotFoundException('존재하지 않는 사용자입니다.');
+        }
+
+        const { nickname, imageUri } = editProfileDto;
+        profile.nickname = nickname;
+        profile.imageUri = imageUri;
+
+        try {
+            await this.userRepository.save(profile);
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException('프로필 수정 도중 에러가 발생했습니다.');
+        }
     }
 }
