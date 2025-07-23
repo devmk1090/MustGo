@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -121,6 +121,28 @@ export class AuthService {
         } catch (error) {
             console.log(error);
             throw new InternalServerErrorException('프로필 수정 도중 에러가 발생했습니다.');
+        }
+    }
+
+    async deleteRefreshToken(user: User) {
+        try {
+            await this.userRepository.update(user.id, { hashedRefreshToken: undefined });
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async deleteAccount(user: User) {
+        try {
+            await this.userRepository.createQueryBuilder('user')
+                .delete()
+                .from(User)
+                .where('id = :id', { id: user.id })
+                .execute();
+        } catch (error) {
+            console.log(error);
+            throw new BadRequestException('탈퇴할 수 없습니다. 남은 데이터가 존재하는지 확인해주세요.');
         }
     }
 }

@@ -37,4 +37,16 @@ export class AuthController {
     editProfile(@Body() editProfileDto: EditProfileDto, @GetUser() user: User) {
         return this.authService.editProfile(editProfileDto, user);
     }
+
+    @Post('/logout')
+    @UseGuards(AuthGuard())
+    logout(@GetUser() user: User) {
+        return this.authService.deleteRefreshToken(user);
+    }
+
+    @Post('/me')
+    @UseGuards(AuthGuard())
+    deleteAccount(@GetUser() user: User) {
+        return this.authService.deleteAccount(user);
+    }
 }
