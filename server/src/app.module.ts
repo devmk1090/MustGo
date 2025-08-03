@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostModule } from './post/post.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     PostModule,
     AuthModule,
+    ImageModule,
   ],
   providers: [ConfigService],
 })
