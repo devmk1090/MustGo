@@ -4,6 +4,7 @@ import { Post } from './post.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/user.entity';
+import { Image } from 'src/image/image.entity';
 
 //각 컨트롤러의 메서드에 해당하는 db작업 로직이 들어감
 
@@ -12,6 +13,8 @@ export class PostService {
     constructor(
         @InjectRepository(Post)
         private postRepository: Repository<Post>,
+        @InjectRepository(Image)
+        private imageRepository: Repository<Image>,
     ) { }
 
     async getAllMarkers(user: User) {
@@ -37,24 +40,38 @@ export class PostService {
         }
     }
 
+    //id를 이용한 이미지 정렬
+    private getPostsWithOrderImages(posts: Post[]) {
+        return posts.map((post) => {
+            const {images, ...rest} = post
+            const newImages = [...images].sort((a, b) => a.id - b.id)
+
+            return {...rest, images: newImages}
+        })
+    }
+
     //페이지네이션 처리
     async getPosts(page: number, user: User) {
         const perPage = 10
         const offset = (page - 1) * perPage;
 
-        return this.postRepository
+        const posts = await this.postRepository
             .createQueryBuilder('post')
+            .leftJoinAndSelect('post.images', 'image') //2개 이상의 테이블을 결합해서 get
             .where('post.userId = :userId', { userId: user.id })
             .orderBy('post.date', 'DESC')
             .skip(offset)
             .take(perPage)
             .getMany();
+
+            return this.getPostsWithOrderImages(posts)
     }
 
     async getPostById(id: number, user: User) {
         try {
             const foundPost = await this.postRepository
                 .createQueryBuilder('post')
+                .leftJoinAndSelect('post.images', 'image')
                 .where('post.userId = :userId', { userId: user.id })
                 .andWhere('post.id = :id', { id })
                 .getOne();
@@ -98,8 +115,12 @@ export class PostService {
             user,
         });
 
+        const images = imageUris.map(uri => this.imageRepository.create(uri));
+        post.images = images;
+
         //db에 저장
         try {
+            await this.imageRepository.save(images);
             await this.postRepository.save(post);
         } catch (error) {
             console.log(error);
@@ -108,7 +129,7 @@ export class PostService {
             )
         }
 
-        const { user:_, ...postWithoutUser } = post; // user 제외하고 리턴
+        const { user: _, ...postWithoutUser } = post; // user 제외하고 리턴
 
         return postWithoutUser;
     }
@@ -152,9 +173,11 @@ export class PostService {
         post.date = date
         post.score = score
 
-        //  TODO: image module
+        const images = imageUris.map(uri => this.imageRepository.create(uri));
+        post.images = images;
 
         try {
+            await this.imageRepository.save(images);
             await this.postRepository.save(post)
         } catch (error) {
             console.log(error);

@@ -4,6 +4,8 @@ import { PostModule } from './post/post.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ImageModule } from './image/image.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -17,6 +19,9 @@ import { ImageModule } from './image/image.module';
       database: 'mustgo-server',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, //개발에서만 true
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
     }),
     PostModule,
     AuthModule,
